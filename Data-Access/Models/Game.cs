@@ -14,7 +14,7 @@ namespace Data_Access.Models
         public Guid RecommendedId { get; set; }
         public Requirement RecommendedRequirement { get; set; } = null!;
         public Guid MinimumId { get; set; }
-        public Requirement MinimumdRequirement { get; set; } = null!;
+        public Requirement MinimumRequirement { get; set; } = null!;
         public string? Description { get; set; }
         public ICollection<Review> Reviews { get; set; } = null!;
         public DateOnly ReleaseDate { get; set; }
