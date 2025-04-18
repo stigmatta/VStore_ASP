@@ -7,20 +7,19 @@ namespace Data_Access.Models
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string? Title { get; set; }
-        public SqlMoney SqlMoney { get; set; }
+        public decimal Price { get; set; }
         public int? Discount { get; set; }
         public string? Logo { get; set; }
         public string? Developer { get; set; }
         public Guid RecommendedId { get; set; }
-        public Requirement RecommendedRequirement { get; set; } = null!;
+        public RecommendedRequirement RecommendedRequirement { get; set; } = null!;
         public Guid MinimumId { get; set; }
-        public Requirement MinimumRequirement { get; set; } = null!;
+        public MinimumRequirement MinimumRequirement { get; set; } = null!;
         public string? Description { get; set; }
+        public ICollection<Achievement> Achievements { get; set; } = null!;
         public ICollection<Review> Reviews { get; set; } = null!;
         public DateOnly ReleaseDate { get; set; }
-        public ICollection<Achievement> Achievements { get; set; } = null!;
-        public Guid CoverId { get; set; }
-        public GameGallery Cover { get; set; } = null!;
+        public virtual ICollection<GameGallery> GameGalleries { get; set; } = null!;
 
     }
 }
