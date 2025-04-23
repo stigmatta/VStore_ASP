@@ -1,10 +1,10 @@
 ﻿namespace Data_Access.Models
 {
-    public class BlockedUsers
+    public class Friend
     {
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
-        public Guid BlockedUserId { get; set; }
-        public User BlockedUser { get; set; } = null!;
+        public Guid FriendId { get; set; }
+        public User FriendUser { get; set; } = null!;
     }
 }

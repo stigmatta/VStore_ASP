@@ -14,10 +14,10 @@ namespace Data_Access.Context
         public DbSet<MinimumRequirement> MinimumRequirements { get; set; }
         public DbSet<Achievement> Achievements { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<UserAchievements> UserAchievements { get; set; }
-        public DbSet<UserGames> UserGames { get; set; }
-        public DbSet<Friends> Friends { get; set; }
-        public DbSet<BlockedUsers> BlockedUsers { get; set; }
+        public DbSet<UserAchievement> UserAchievements { get; set; }
+        public DbSet<UserGame> UserGames { get; set; }
+        public DbSet<Friend> Friends { get; set; }
+        public DbSet<BlockedUser> BlockedUsers { get; set; }
 
         public StoreContext(DbContextOptions<StoreContext> options) : base(options) { }
 
@@ -42,18 +42,17 @@ namespace Data_Access.Context
                 .HasKey(r => r.Id);
             mb.Entity<Wishlist>()
                  .HasKey(w => new { w.UserId,w.GameId });
-            mb.Entity<UserAchievements>()
+            mb.Entity<UserAchievement>()
                 .HasKey(ua => new { ua.UserId, ua.AchievementId });
-            mb.Entity<UserGames>()
+            mb.Entity<UserGame>()
                 .HasKey(ug => new { ug.UserId, ug.GameId });
-            mb.Entity<Friends>()
+            mb.Entity<Friend>()
                 .HasKey(f => new { f.UserId, f.FriendId });
-            mb.Entity<BlockedUsers>()
+            mb.Entity<BlockedUser>()
                 .HasKey(b => new { b.UserId, b.BlockedUserId });
 
 
             // Configuring the relationships
-
 
             // Game
             mb.Entity<Game>()
@@ -100,25 +99,25 @@ namespace Data_Access.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             //Friends
-            mb.Entity<Friends>()
+            mb.Entity<Friend>()
                 .HasOne(f => f.User) //user friends to user
                 .WithMany(u => u.Friends)
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            mb.Entity<Friends>()
+            mb.Entity<Friend>()
                 .HasOne(f => f.Friend) //friend to user
                 .WithMany()
                 .HasForeignKey(f => f.FriendId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //BlockedUsers
-            mb.Entity<BlockedUsers>()
+            mb.Entity<BlockedUser>()
                 .HasOne(b=>b.User) //user blocked users to user
                 .WithMany(u => u.BlockedUsers)
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
-            mb.Entity<BlockedUsers>()
+            mb.Entity<BlockedUser>()
                 .HasOne(b => b.BlockedUser) //blocked user to users
                 .WithMany()
                 .HasForeignKey(b => b.BlockedUserId)

@@ -10,8 +10,16 @@ builder.Services.AddSwaggerGen();
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<StoreContext>(options =>
     options.UseSqlServer(connection, b => b.MigrationsAssembly("Data-Access")));
+builder.Services.AddCors(builder =>
+{
+    builder.AddPolicy("AllowReact",
+        options => options.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 var app = builder.Build();
+app.UseCors("AllowReact");  
 
 if (app.Environment.IsDevelopment())
 {
