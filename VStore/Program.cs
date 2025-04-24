@@ -1,10 +1,16 @@
+using Business_Logic.Mappers.UserProfile;
+using Business_Logic.Services;
 using Data_Access.Context;
+using Data_Access.Interfaces;
+using Data_Access.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<UserService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -17,9 +23,10 @@ builder.Services.AddCors(builder =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
+builder.Services.AddAutoMapper(typeof(RegistrationProfile).Assembly);
 
 var app = builder.Build();
-app.UseCors("AllowReact");  
+app.UseCors("AllowReact");
 
 if (app.Environment.IsDevelopment())
 {

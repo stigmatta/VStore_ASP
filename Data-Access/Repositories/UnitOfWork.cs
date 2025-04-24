@@ -37,7 +37,6 @@ namespace Data_Access.Repositories
                 return _gameRepository ?? new GameRepository(_context);
             }
         }
-        }
 
         public WishlistRepository WishlistRepository {
             get
