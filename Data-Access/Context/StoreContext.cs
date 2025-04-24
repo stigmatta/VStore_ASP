@@ -85,6 +85,9 @@ mb.Entity<Game>()
 
             //User
             mb.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+            mb.Entity<User>()
                 .HasMany(u=>u.UserAchievements) //user achievements to user
                 .WithOne(ua=>ua.User)
                 .HasForeignKey(ua => ua.UserId)

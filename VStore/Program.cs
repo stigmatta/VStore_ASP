@@ -1,3 +1,5 @@
+using Business_Logic.Mappers.UserProfile;
+using Business_Logic.Services;
 using Data_Access.Context;
 using Data_Access.Interfaces;
 using Data_Access.Models;
@@ -8,7 +10,6 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Добавляем сервисы
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -25,6 +26,7 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
+builder.Services.AddAutoMapper(typeof(RegistrationProfile).Assembly);
 
 // Регистрация репозиториев
 builder.Services.AddScoped<IRepository<Game>, GameRepository>();

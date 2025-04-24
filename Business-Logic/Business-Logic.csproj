@@ -7,4 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Sodium.Core" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data-Access\Data-Access.csproj" />
+    <ProjectReference Include="..\Data-Transfer-Object\Data-Transfer-Object.csproj" />
+  </ItemGroup>
+
 </Project>
