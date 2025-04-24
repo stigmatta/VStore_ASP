@@ -9,8 +9,6 @@
         public string? Graphics { get; set; }
         public int Storage { get; set; }
         public string? Device { get; set; }
-        public Guid GameId { get; set; }
-        public Game Game { get; set; } = null!;
     }
 
     public class RecommendedRequirement : Requirement { }

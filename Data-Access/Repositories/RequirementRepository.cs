@@ -2,11 +2,12 @@
 using Data_Access.Interfaces;
 using Data_Access.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Data_Access.Repositories
 {
-
-    public class MinimumRequirementRepository : IRepository<MinimumRequirement>
+    public class MinimumRequirementRepository : IRequirementRepository<MinimumRequirement>
     {
         private readonly StoreContext _context;
         public MinimumRequirementRepository(StoreContext context)
@@ -18,28 +19,31 @@ namespace Data_Access.Repositories
         {
             await _context.MinimumRequirements.AddAsync(entity);
         }
+
         public async Task Delete(Guid id)
         {
             var requirement = await _context.MinimumRequirements.FindAsync(id);
             if (requirement != null)
                 _context.MinimumRequirements.Remove(requirement);
         }
+
         public async Task<MinimumRequirement?> GetById(Guid id)
         {
             return await _context.MinimumRequirements.FindAsync(id);
-        }
-        public async Task<MinimumRequirement?> GetByGameId(Guid gameId)
-        {
-            return await _context.MinimumRequirements.FirstOrDefaultAsync(r => r.GameId == gameId);
         }
 
         public void Update(MinimumRequirement entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
         }
+
+        public async Task<IEnumerable<MinimumRequirement>> GetAll()
+        {
+            return await _context.MinimumRequirements.ToListAsync();
+        }
     }
 
-    public class RecommendedRequirementRepository : IRepository<RecommendedRequirement>
+    public class RecommendedRequirementRepository : IRequirementRepository<RecommendedRequirement>
     {
         private readonly StoreContext _context;
         public RecommendedRequirementRepository(StoreContext context)
@@ -63,14 +67,15 @@ namespace Data_Access.Repositories
         {
             return await _context.RecommendedRequirements.FindAsync(id);
         }
-        public async Task<RecommendedRequirement?> GetByGameId(Guid gameId)
-        {
-            return await _context.RecommendedRequirements.FirstOrDefaultAsync(r => r.GameId == gameId);
-        }
 
         public void Update(RecommendedRequirement entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public async Task<IEnumerable<RecommendedRequirement>> GetAll()
+        {
+            return await _context.RecommendedRequirements.ToListAsync();
         }
     }
 }

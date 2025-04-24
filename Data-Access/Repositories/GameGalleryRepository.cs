@@ -15,6 +15,7 @@ namespace Data_Access.Repositories
         public async Task Add(GameGallery entity)
         {
             await _context.GameGalleries.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
         public async Task Delete(Guid id)
         {

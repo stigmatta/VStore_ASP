@@ -66,15 +66,17 @@ namespace Data_Access.Context
                 .HasForeignKey(a => a.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
             mb.Entity<Game>()
-                .HasOne(g => g.RecommendedRequirement) //recommended requirement to game
-                .WithOne(r => r.Game)
-                .HasForeignKey<Game>(g => g.RecommendedId)
-                .OnDelete(DeleteBehavior.Cascade);
-            mb.Entity<Game>()
-                .HasOne(g => g.MinimumRequirement) //minimum requirement to game
-                .WithOne(r => r.Game)
-                .HasForeignKey<Game>(g => g.MinimumId)
-                .OnDelete(DeleteBehavior.Cascade);
+    .HasOne(g => g.RecommendedRequirement)
+    .WithMany()
+    .HasForeignKey(g => g.RecommendedRequirementId)
+    .OnDelete(DeleteBehavior.SetNull);
+
+mb.Entity<Game>()
+    .HasOne(g => g.MinimumRequirement)
+    .WithMany()
+    .HasForeignKey(g => g.MinimumRequirementId)
+    .OnDelete(DeleteBehavior.SetNull);
+
             mb.Entity<Game>()
                 .HasMany(g=>g.GameGalleries) //game galleries to game
                 .WithOne(gg => gg.Game)

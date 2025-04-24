@@ -15,6 +15,7 @@ namespace Data_Access.Repositories
         public async Task Add(Game entity)
         {
             await _context.Games.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(Guid id)
