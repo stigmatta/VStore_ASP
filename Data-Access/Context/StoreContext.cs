@@ -17,7 +17,7 @@ namespace Data_Access.Context
         public DbSet<UserAchievement> UserAchievements { get; set; }
         public DbSet<UserGame> UserGames { get; set; }
         public DbSet<Friend> Friends { get; set; }
-        public DbSet<BlockedUser> BlockedUsers { get; set; }
+        public DbSet<BlockedUser> BlockedUser { get; set; }
 
         public StoreContext(DbContextOptions<StoreContext> options) : base(options) { }
 
@@ -106,7 +106,7 @@ namespace Data_Access.Context
                 .OnDelete(DeleteBehavior.NoAction);
 
             mb.Entity<Friend>()
-                .HasOne(f => f.Friend) //friend to user
+                .HasOne(f => f.FriendUser) //friend to user
                 .WithMany()
                 .HasForeignKey(f => f.FriendId)
                 .OnDelete(DeleteBehavior.NoAction);
@@ -118,7 +118,7 @@ namespace Data_Access.Context
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
             mb.Entity<BlockedUser>()
-                .HasOne(b => b.BlockedUser) //blocked user to users
+                .HasOne(b => b.Blocked) //blocked user to users
                 .WithMany()
                 .HasForeignKey(b => b.BlockedUserId)
                 .OnDelete(DeleteBehavior.NoAction);

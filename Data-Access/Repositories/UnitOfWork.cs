@@ -37,70 +37,70 @@ namespace Data_Access.Repositories
                 return _gameRepository ?? new GameRepository(_context);
             }
         }
-        }
+        
 
         public WishlistRepository WishlistRepository {
             get
             {
                 return _wishlistRepository ?? new WishlistRepository(_context);
             }
-        };
+        }
 
         public GameGalleryRepository GameGalleryRepository {
             get
             {
                 return _gameGalleryRepository ?? new GameGalleryRepository(_context);
             }
-        };
+        }
 
         public UserGamesRepository UserGameRepository {
             get
             {
                 return _userGameRepository ?? new UserGamesRepository(_context);
             }
-        };
+        }
 
         public UserAchievementRepository UserAchievementRepository {
             get
             {
                 return _userAchievementRepository ?? new UserAchievementRepository(_context);
             }
-        };
+        }
 
         public FriendRepository FriendRepository {
             get
             {
                 return _friendRepository ?? new FriendRepository(_context);
             }
-        };
+        }
 
         public ReviewRepository ReviewRepository {
             get
             {
                 return _reviewRepository ?? new ReviewRepository(_context);
             }
-        };
+        }
 
         public BlockedUserRepository BlockedUserRepository {
             get
             {
                 return _blockedUserRepository ?? new BlockedUserRepository(_context);
             }
-        };
+        }
 
         public NewsRepository NewsRepository {
             get
             {
                 return _newsRepository ?? new NewsRepository(_context);
             }
-        };
+        }
 
         public MinimumRequirementRepository MinimumRequirementRepository {
             get
             {
                 return _minimumRequirementRepository ?? new MinimumRequirementRepository(_context);
             }
-        };
+        }
 
         public RecommendedRequirementRepository RecommendedRequirementRepository {
             get

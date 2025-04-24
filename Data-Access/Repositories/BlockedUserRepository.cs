@@ -16,19 +16,19 @@ namespace Data_Access.Repositories
 
         public async Task Add(BlockedUser entity)
         {
-            await _context.BlockedUsers.AddAsync(entity);
+            await _context.BlockedUser.AddAsync(entity);
         }
 
         public async Task Delete(Guid id)
         {
-            var blockedUser = await _context.BlockedUsers.FindAsync(id);
+            var blockedUser = await _context.BlockedUser.FindAsync(id);
             if (blockedUser != null)
-                _context.BlockedUsers.Remove(blockedUser);
+                _context.BlockedUser.Remove(blockedUser);
         }
 
         public async Task<BlockedUser?> GetById(Guid id)
         {
-            return await _context.BlockedUsers.FindAsync(id);
+            return await _context.BlockedUser.FindAsync(id);
         }
         public async Task<IList<BlockedUser>> GetAll(Guid userId)
         {
