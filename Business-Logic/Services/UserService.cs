@@ -29,6 +29,14 @@ namespace Business_Logic.Services
         {
             return PasswordHash.ArgonHashString(password, PasswordHash.StrengthArgon.Interactive);
         }
-        
+
+        public async Task<bool> VerifyUser(string username,string Password)
+        {
+            var users = await Database.UserRepository.GetAll();
+            var userExists = users.FirstOrDefault(x => x.Username == username);
+            if(userExists == null)
+                return false;
+            return PasswordHash.ArgonHashStringVerify(userExists.Password, Password);
+        }
     }
 }

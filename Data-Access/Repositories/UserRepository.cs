@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repositories
 {
-    public class UserRepository: IRepository<User>
+    public class UserRepository: IListRepository<User>
     {
         private readonly StoreContext _context;
         public UserRepository(StoreContext context)
@@ -22,6 +22,13 @@ namespace Data_Access.Repositories
             if (user != null)
                 _context.Users.Remove(user);
         }
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _context.Users
+                .ToListAsync();
+        }
+
         public async Task<User?> GetById(Guid id)
         {
            return await _context.Users.FindAsync(id);

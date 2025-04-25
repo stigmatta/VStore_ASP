@@ -46,5 +46,21 @@ namespace VStore.Controllers
             _logger.LogInformation("User registered successfully");
             return Ok("User registered successfully");
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]LoginDTO loginDTO)
+        {
+            _logger.LogInformation("Logging in user with email: {username}", loginDTO.Username);
+            if (loginDTO == null || string.IsNullOrEmpty(loginDTO.Username) || string.IsNullOrEmpty(loginDTO.Password))
+            {
+                _logger.LogInformation("Invalid input");
+                return BadRequest("Invalid input");
+            }
+            if(!await _userService.VerifyUser(loginDTO.Username, loginDTO.Password))
+            {
+                _logger.LogInformation("Invalid credentials");
+                return BadRequest("Invalid credentials");
+            }
+            return Ok("User logged in successfully");
+        }
     }
 }

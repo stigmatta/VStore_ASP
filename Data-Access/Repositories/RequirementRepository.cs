@@ -2,12 +2,10 @@
 using Data_Access.Interfaces;
 using Data_Access.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Data_Access.Repositories
 {
-    public class MinimumRequirementRepository : IRequirementRepository<MinimumRequirement>
+    public class MinimumRequirementRepository : IListRepository<MinimumRequirement>
     {
         private readonly StoreContext _context;
         public MinimumRequirementRepository(StoreContext context)
@@ -43,7 +41,7 @@ namespace Data_Access.Repositories
         }
     }
 
-    public class RecommendedRequirementRepository : IRequirementRepository<RecommendedRequirement>
+    public class RecommendedRequirementRepository : IListRepository<RecommendedRequirement>
     {
         private readonly StoreContext _context;
         public RecommendedRequirementRepository(StoreContext context)

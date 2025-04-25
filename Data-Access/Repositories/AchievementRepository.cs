@@ -31,6 +31,7 @@ namespace Data_Access.Repositories
             _context.Entry(entity).State = EntityState.Modified;
         }
 
+
         public async Task<IList<Achievement>> GetAll(Guid gameId)
         {
             var game = await _context.Games
@@ -40,5 +41,7 @@ namespace Data_Access.Repositories
                 return game.Achievements.ToList();
             return new List<Achievement>();
         }
+
+
     }
 }

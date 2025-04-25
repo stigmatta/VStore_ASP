@@ -1,17 +1,15 @@
 ﻿using Data_Access.Interfaces;
 using Data_Access.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/admin")]
 public class AdminReqController : ControllerBase
 {
-    private readonly IRequirementRepository<MinimumRequirement> _minReqRepo;
-    private readonly IRequirementRepository<RecommendedRequirement> _recReqRepo;
+    private readonly IListRepository<MinimumRequirement> _minReqRepo;
+    private readonly IListRepository<RecommendedRequirement> _recReqRepo;
 
-    public AdminReqController(IRequirementRepository<MinimumRequirement> minReqRepo, IRequirementRepository<RecommendedRequirement> recReqRepo)
+    public AdminReqController(IListRepository<MinimumRequirement> minReqRepo, IListRepository<RecommendedRequirement> recReqRepo)
     {
         _minReqRepo = minReqRepo;
         _recReqRepo = recReqRepo;

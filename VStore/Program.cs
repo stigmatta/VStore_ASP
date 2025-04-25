@@ -12,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавляем сервисы
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
 // Настройка БД
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -29,10 +31,14 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(typeof(RegistrationProfile).Assembly);
 
 // Регистрация репозиториев
-builder.Services.AddScoped<IRepository<Game>, GameRepository>();
-builder.Services.AddScoped<IRequirementRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
-builder.Services.AddScoped<IRequirementRepository<MinimumRequirement>, MinimumRequirementRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IListRepository<Game>, GameRepository>();
+builder.Services.AddScoped<IListRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
+builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
 builder.Services.AddScoped<IRepository<GameGallery>, GameGalleryRepository>();
+
+//Сервисы
+builder.Services.AddTransient<UserService>();
 
 var app = builder.Build();
 

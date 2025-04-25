@@ -1,24 +1,19 @@
 ﻿using Data_Access.Interfaces;
-using Data_Access.Models;
-using Data_Access.Dto_Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Data_Access.Dto_Models;
 
 [ApiController]
 [Route("api/admin")]
 public class AdminGameController : ControllerBase
 {
-    private readonly IRepository<Game> _gameRepo;
+    private readonly IListRepository<Game> _gameRepo;
     private readonly IRepository<GameGallery> _galleryRepo;
     private readonly IHostEnvironment _env;
 
     public AdminGameController(
-        IRepository<Game> gameRepo,
+        IListRepository<Game> gameRepo,
         IRepository<GameGallery> galleryRepo,
         IHostEnvironment env)
     {
@@ -26,6 +21,14 @@ public class AdminGameController : ControllerBase
         _galleryRepo = galleryRepo;
         _env = env;
     }
+
+    [HttpGet("games")]
+    public async Task<IActionResult> GetGames()
+    {
+        var games = await _gameRepo.GetAll();
+        return Ok(games);
+    }
+
 
     [HttpPost("add-game")]
     public async Task<IActionResult> AddGame([FromForm] GameDto request)

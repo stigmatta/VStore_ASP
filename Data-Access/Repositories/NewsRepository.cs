@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repositories
 {
-    public class NewsRepository : IRepository<News>
+    public class NewsRepository : IListRepository<News>
     {
         private readonly StoreContext _context;
         public NewsRepository(StoreContext context)
@@ -34,7 +34,7 @@ namespace Data_Access.Repositories
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public async Task<IList<News>> GetAll()
+        public async Task<IEnumerable<News>>GetAll()
         {
             return await _context.News.ToListAsync();
         }
