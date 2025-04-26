@@ -17,9 +17,10 @@ namespace Data_Access.Context
         public DbSet<UserAchievement> UserAchievements { get; set; }
         public DbSet<UserGame> UserGames { get; set; }
         public DbSet<Friend> Friends { get; set; }
-        public DbSet<BlockedUser> BlockedUser { get; set; }
+        public DbSet<BlockedUser> BlockedUsers { get; set; }
 
-        public StoreContext(DbContextOptions<StoreContext> options) : base(options) { }
+        public StoreContext(DbContextOptions<StoreContext> options) : base(options) {
+        }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
@@ -66,22 +67,26 @@ namespace Data_Access.Context
                 .HasForeignKey(a => a.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
             mb.Entity<Game>()
-    .HasOne(g => g.RecommendedRequirement)
-    .WithMany()
-    .HasForeignKey(g => g.RecommendedRequirementId)
-    .OnDelete(DeleteBehavior.SetNull);
+                .HasOne(g => g.RecommendedRequirement)
+                .WithMany()
+                .HasForeignKey(g => g.RecommendedRequirementId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-mb.Entity<Game>()
-    .HasOne(g => g.MinimumRequirement)
-    .WithMany()
-    .HasForeignKey(g => g.MinimumRequirementId)
-    .OnDelete(DeleteBehavior.SetNull);
+            mb.Entity<Game>()
+                .HasOne(g => g.MinimumRequirement)
+                .WithMany()
+                .HasForeignKey(g => g.MinimumRequirementId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             mb.Entity<Game>()
                 .HasMany(g=>g.GameGalleries) //game galleries to game
                 .WithOne(gg => gg.Game)
                 .HasForeignKey(gg => gg.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            mb.Entity<Game>()
+                .Property(mb => mb.Price)
+                .HasPrecision(18, 2);
 
             //User
             mb.Entity<User>()
@@ -117,6 +122,8 @@ mb.Entity<Game>()
                 .OnDelete(DeleteBehavior.NoAction);
 
             //BlockedUsers
+            mb.Entity<BlockedUser>()
+                .ToTable("BlockedUsers"); //table name
             mb.Entity<BlockedUser>()
                 .HasOne(b=>b.User) //user blocked users to user
                 .WithMany(u => u.BlockedUsers)

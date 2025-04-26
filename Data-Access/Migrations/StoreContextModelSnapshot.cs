@@ -56,7 +56,7 @@ namespace Data_Access.Migrations
 
                     b.HasIndex("BlockedUserId");
 
-                    b.ToTable("BlockedUser");
+                    b.ToTable("BlockedUsers", (string)null);
                 });
 
             modelBuilder.Entity("Data_Access.Models.Friend", b =>
@@ -294,6 +294,7 @@ namespace Data_Access.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("RecommendedRequirementId")

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250424112608_IsAdmin")]
-    partial class IsAdmin
+    [Migration("20250425203901_NewCommit")]
+    partial class NewCommit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace Data_Access.Migrations
 
                     b.HasIndex("BlockedUserId");
 
-                    b.ToTable("BlockedUsers");
+                    b.ToTable("BlockedUsers", (string)null);
                 });
 
             modelBuilder.Entity("Data_Access.Models.Friend", b =>
@@ -77,75 +77,6 @@ namespace Data_Access.Migrations
                     b.ToTable("Friends");
                 });
 
-            modelBuilder.Entity("Data_Access.Models.Game", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Developer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Discount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("MinimumId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("RecommendedId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateOnly>("ReleaseDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MinimumId")
-                        .IsUnique();
-
-                    b.HasIndex("RecommendedId")
-                        .IsUnique();
-
-                    b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("Data_Access.Models.GameGallery", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsCover")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.ToTable("GameGalleries");
-                });
-
             modelBuilder.Entity("Data_Access.Models.MinimumRequirement", b =>
                 {
                     b.Property<Guid>("Id")
@@ -154,9 +85,6 @@ namespace Data_Access.Migrations
 
                     b.Property<string>("Device")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Graphics")
                         .HasColumnType("nvarchar(max)");
@@ -206,9 +134,6 @@ namespace Data_Access.Migrations
 
                     b.Property<string>("Device")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Graphics")
                         .HasColumnType("nvarchar(max)");
@@ -270,7 +195,7 @@ namespace Data_Access.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
@@ -288,6 +213,10 @@ namespace Data_Access.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -346,9 +275,77 @@ namespace Data_Access.Migrations
                     b.ToTable("Wishlists");
                 });
 
+            modelBuilder.Entity("Game", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Developer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Discount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("MinimumRequirementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("RecommendedRequirementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("ReleaseDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MinimumRequirementId");
+
+                    b.HasIndex("RecommendedRequirementId");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("GameGallery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCover")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameGalleries");
+                });
+
             modelBuilder.Entity("Data_Access.Models.Achievement", b =>
                 {
-                    b.HasOne("Data_Access.Models.Game", "Game")
+                    b.HasOne("Game", "Game")
                         .WithMany("Achievements")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -395,39 +392,9 @@ namespace Data_Access.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Data_Access.Models.Game", b =>
-                {
-                    b.HasOne("Data_Access.Models.MinimumRequirement", "MinimumRequirement")
-                        .WithOne("Game")
-                        .HasForeignKey("Data_Access.Models.Game", "MinimumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data_Access.Models.RecommendedRequirement", "RecommendedRequirement")
-                        .WithOne("Game")
-                        .HasForeignKey("Data_Access.Models.Game", "RecommendedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MinimumRequirement");
-
-                    b.Navigation("RecommendedRequirement");
-                });
-
-            modelBuilder.Entity("Data_Access.Models.GameGallery", b =>
-                {
-                    b.HasOne("Data_Access.Models.Game", "Game")
-                        .WithMany("GameGalleries")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-                });
-
             modelBuilder.Entity("Data_Access.Models.Review", b =>
                 {
-                    b.HasOne("Data_Access.Models.Game", "Game")
+                    b.HasOne("Game", "Game")
                         .WithMany("Reviews")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,7 +432,7 @@ namespace Data_Access.Migrations
 
             modelBuilder.Entity("Data_Access.Models.UserGame", b =>
                 {
-                    b.HasOne("Data_Access.Models.Game", "Game")
+                    b.HasOne("Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -484,7 +451,7 @@ namespace Data_Access.Migrations
 
             modelBuilder.Entity("Data_Access.Models.Wishlist", b =>
                 {
-                    b.HasOne("Data_Access.Models.Game", "Game")
+                    b.HasOne("Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -501,30 +468,37 @@ namespace Data_Access.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Game", b =>
+                {
+                    b.HasOne("Data_Access.Models.MinimumRequirement", "MinimumRequirement")
+                        .WithMany()
+                        .HasForeignKey("MinimumRequirementId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Data_Access.Models.RecommendedRequirement", "RecommendedRequirement")
+                        .WithMany()
+                        .HasForeignKey("RecommendedRequirementId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("MinimumRequirement");
+
+                    b.Navigation("RecommendedRequirement");
+                });
+
+            modelBuilder.Entity("GameGallery", b =>
+                {
+                    b.HasOne("Game", "Game")
+                        .WithMany("GameGalleries")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
             modelBuilder.Entity("Data_Access.Models.Achievement", b =>
                 {
                     b.Navigation("UserAchievements");
-                });
-
-            modelBuilder.Entity("Data_Access.Models.Game", b =>
-                {
-                    b.Navigation("Achievements");
-
-                    b.Navigation("GameGalleries");
-
-                    b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("Data_Access.Models.MinimumRequirement", b =>
-                {
-                    b.Navigation("Game")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Data_Access.Models.RecommendedRequirement", b =>
-                {
-                    b.Navigation("Game")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Data_Access.Models.User", b =>
@@ -538,6 +512,15 @@ namespace Data_Access.Migrations
                     b.Navigation("UserGames");
 
                     b.Navigation("Wishlist");
+                });
+
+            modelBuilder.Entity("Game", b =>
+                {
+                    b.Navigation("Achievements");
+
+                    b.Navigation("GameGalleries");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data_Access.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class NewCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,8 +21,7 @@ namespace Data_Access.Migrations
                     Memory = table.Column<int>(type: "int", nullable: false),
                     Graphics = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Storage = table.Column<int>(type: "int", nullable: false),
-                    Device = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Device = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -53,8 +52,7 @@ namespace Data_Access.Migrations
                     Memory = table.Column<int>(type: "int", nullable: false),
                     Graphics = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Storage = table.Column<int>(type: "int", nullable: false),
-                    Device = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Device = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -68,7 +66,8 @@ namespace Data_Access.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Level = table.Column<int>(type: "int", nullable: false)
                 },
@@ -83,30 +82,30 @@ namespace Data_Access.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Discount = table.Column<int>(type: "int", nullable: true),
                     Logo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Developer = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RecommendedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MinimumId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ReleaseDate = table.Column<DateOnly>(type: "date", nullable: false)
+                    ReleaseDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    RecommendedRequirementId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MinimumRequirementId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Games", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_MinimumRequirements_MinimumId",
-                        column: x => x.MinimumId,
+                        name: "FK_Games_MinimumRequirements_MinimumRequirementId",
+                        column: x => x.MinimumRequirementId,
                         principalTable: "MinimumRequirements",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Games_RecommendedRequirements_RecommendedId",
-                        column: x => x.RecommendedId,
+                        name: "FK_Games_RecommendedRequirements_RecommendedRequirementId",
+                        column: x => x.RecommendedRequirementId,
                         principalTable: "RecommendedRequirements",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,7 +179,7 @@ namespace Data_Access.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsCover = table.Column<bool>(type: "bit", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -318,16 +317,14 @@ namespace Data_Access.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_MinimumId",
+                name: "IX_Games_MinimumRequirementId",
                 table: "Games",
-                column: "MinimumId",
-                unique: true);
+                column: "MinimumRequirementId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_RecommendedId",
+                name: "IX_Games_RecommendedRequirementId",
                 table: "Games",
-                column: "RecommendedId",
-                unique: true);
+                column: "RecommendedRequirementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_GameId",
@@ -348,6 +345,13 @@ namespace Data_Access.Migrations
                 name: "IX_UserGames_GameId",
                 table: "UserGames",
                 column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Wishlists_GameId",

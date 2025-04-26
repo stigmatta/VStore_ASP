@@ -55,12 +55,26 @@ namespace VStore.Controllers
                 _logger.LogInformation("Invalid input");
                 return BadRequest("Invalid input");
             }
-            if(!await _userService.VerifyUser(loginDTO.Username, loginDTO.Password))
+
+            var user = await _userService.VerifyUser(loginDTO.Username, loginDTO.Password);
+
+            if (user == null)
             {
                 _logger.LogInformation("Invalid credentials");
                 return BadRequest("Invalid credentials");
             }
-            return Ok("User logged in successfully");
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, 
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddHours(2)
+            };
+            Response.Cookies.Append("isAdmin", user.IsAdmin.ToString(), cookieOptions);
+            Response.Cookies.Append("username", user.Username, cookieOptions);
+            Response.Cookies.Append("userId", user.Id.ToString(), cookieOptions);
+
+            return Ok("Login successful");
         }
     }
 }

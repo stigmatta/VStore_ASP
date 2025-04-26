@@ -1,37 +1,36 @@
-﻿using Data_Access.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
-using Data_Access.Dto_Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Business_Logic.Services;
+using VStore.DTO.Game;
+using Microsoft.AspNetCore.Hosting.Server;
 
 [ApiController]
-[Route("api/admin")]
+[Route("api/admin/games")]
+[Authorize(Policy = "CookieAdminPolicy")]
+
 public class AdminGameController : ControllerBase
 {
-    private readonly IListRepository<Game> _gameRepo;
-    private readonly IRepository<GameGallery> _galleryRepo;
-    private readonly IHostEnvironment _env;
 
-    public AdminGameController(
-        IListRepository<Game> gameRepo,
-        IRepository<GameGallery> galleryRepo,
-        IHostEnvironment env)
+    private readonly GameService _gameService;
+    private readonly GameGalleryService _gameGalleryService;
+    private readonly IWebHostEnvironment _env;
+    public AdminGameController(GameService gameService, GameGalleryService gameGalleryService,IWebHostEnvironment env)
     {
-        _gameRepo = gameRepo;
-        _galleryRepo = galleryRepo;
+        _gameService = gameService;
+        _gameGalleryService = gameGalleryService;
         _env = env;
     }
 
-    [HttpGet("games")]
+    [HttpGet]
     public async Task<IActionResult> GetGames()
     {
-        var games = await _gameRepo.GetAll();
+        var games = await _gameService.GetAllGames();
         return Ok(games);
     }
 
 
     [HttpPost("add-game")]
-    public async Task<IActionResult> AddGame([FromForm] GameDto request)
+    public async Task<IActionResult> AddGame([FromForm] GameDTO request)
     {
         try
         {
@@ -47,20 +46,21 @@ public class AdminGameController : ControllerBase
                 Description = request.Description,
                 Price = request.Price,
                 Discount = request.Discount,
-                Logo = logoPath,
+                LogoPath = logoPath,
                 Developer = request.Developer,
                 RecommendedRequirementId = request.RecommendedRequirementId,
                 MinimumRequirementId = request.MinimumRequirementId,
                 ReleaseDate = request.ReleaseDate
             };
 
-            await _gameRepo.Add(game);
+            await _gameService.AddGame(game);
+
             if (request.GalleryFiles != null && request.GalleryFiles.Count > 0)
             {
                 foreach (var file in request.GalleryFiles)
                 {
                     string filePath = await SaveFileAsync(file, "gallery");
-                    await _galleryRepo.Add(new GameGallery
+                    await _gameGalleryService.AddGameGallery(new GameGallery
                     {
                         Id = Guid.NewGuid(),
                         Link = filePath,
@@ -84,15 +84,12 @@ public class AdminGameController : ControllerBase
         if (file == null || file.Length == 0)
             throw new ArgumentException("Файл не может быть пустым");
 
-        // Создаем папку если не существует
         string uploadsDir = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", subfolder);
         Directory.CreateDirectory(uploadsDir);
 
-        // Генерируем уникальное имя файла
         string uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         string filePath = Path.Combine(uploadsDir, uniqueFileName);
 
-        // Сохраняем файл
         using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(fileStream);

@@ -1,9 +1,11 @@
 ﻿using Data_Access.Interfaces;
 using Data_Access.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("api/admin")]
+[Route("api/admin/reqs")]
+[Authorize(Policy = "CookieAdminPolicy")]
 public class AdminReqController : ControllerBase
 {
     private readonly IListRepository<MinimumRequirement> _minReqRepo;

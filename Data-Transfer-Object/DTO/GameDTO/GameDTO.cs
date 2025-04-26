@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Data_Access.Dto_Models
+namespace VStore.DTO.Game
 {
-    public class GameDto
+    public class GameDTO
     {
         public string Title { get; set; }
         public string Description { get; set; }
