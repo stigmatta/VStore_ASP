@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data_Access.Migrations
 {
     /// <inheritdoc />
-    public partial class NewCommit : Migration
+    public partial class Update2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -84,7 +84,7 @@ namespace Data_Access.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Discount = table.Column<int>(type: "int", nullable: true),
-                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LogoPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Developer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReleaseDate = table.Column<DateOnly>(type: "date", nullable: false),

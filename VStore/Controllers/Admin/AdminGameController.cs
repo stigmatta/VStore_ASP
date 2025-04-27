@@ -3,18 +3,21 @@ using Microsoft.AspNetCore.Authorization;
 using Business_Logic.Services;
 using VStore.DTO.Game;
 using Microsoft.AspNetCore.Hosting.Server;
+using Data_Access.Models;
 
 [ApiController]
 [Route("api/admin/games")]
-[Authorize(Policy = "CookieAdminPolicy")]
-
+//[Authorize(Policy = "CookieAdminPolicy")]
 public class AdminGameController : ControllerBase
 {
-
     private readonly GameService _gameService;
     private readonly GameGalleryService _gameGalleryService;
     private readonly IWebHostEnvironment _env;
-    public AdminGameController(GameService gameService, GameGalleryService gameGalleryService,IWebHostEnvironment env)
+
+    public AdminGameController(
+        GameService gameService,
+        GameGalleryService gameGalleryService,
+        IWebHostEnvironment env)
     {
         _gameService = gameService;
         _gameGalleryService = gameGalleryService;
@@ -27,7 +30,6 @@ public class AdminGameController : ControllerBase
         var games = await _gameService.GetAllGames();
         return Ok(games);
     }
-
 
     [HttpPost("add-game")]
     public async Task<IActionResult> AddGame([FromForm] GameDTO request)
@@ -76,6 +78,48 @@ public class AdminGameController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { Error = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteGame(Guid id)
+    {
+        try
+        {
+            var game = await _gameService.GetById(id);
+            if (game == null)
+                return NotFound(new { Error = "Игра не найдена" });
+            await DeleteGameFiles(game);
+            await _gameService.DeleteGame(id);
+
+            return Ok(new { Success = true });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Error = ex.Message });
+        }
+    }
+
+    private async Task DeleteGameFiles(Game game)
+    {
+        if (!string.IsNullOrEmpty(game.LogoPath))
+        {
+            var logoPath = Path.Combine(_env.ContentRootPath, "wwwroot", game.LogoPath.TrimStart('/'));
+            if (System.IO.File.Exists(logoPath))
+            {
+                System.IO.File.Delete(logoPath);
+            }
+        }
+
+        var galleryItems = await _gameGalleryService.GetByGameId(game.Id);
+        foreach (var item in galleryItems)
+        {
+            var filePath = Path.Combine(_env.ContentRootPath, "wwwroot", item.Link.TrimStart('/'));
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+           
         }
     }
 

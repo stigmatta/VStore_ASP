@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250425203901_NewCommit")]
-    partial class NewCommit
+    [Migration("20250427091901_Update2")]
+    partial class Update2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -290,7 +290,7 @@ namespace Data_Access.Migrations
                     b.Property<int?>("Discount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Logo")
+                    b.Property<string>("LogoPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("MinimumRequirementId")

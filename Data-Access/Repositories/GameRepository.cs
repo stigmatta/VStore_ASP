@@ -22,6 +22,7 @@ namespace Data_Access.Repositories
             var game = await _context.Games.FindAsync(id);
             if (game != null)
                 _context.Games.Remove(game);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Game>> GetAll()

@@ -287,7 +287,7 @@ namespace Data_Access.Migrations
                     b.Property<int?>("Discount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Logo")
+                    b.Property<string>("LogoPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("MinimumRequirementId")

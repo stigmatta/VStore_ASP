@@ -16,6 +16,7 @@ namespace Data_Access.Repositories
         public async Task Add(MinimumRequirement entity)
         {
             await _context.MinimumRequirements.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(Guid id)
@@ -23,6 +24,7 @@ namespace Data_Access.Repositories
             var requirement = await _context.MinimumRequirements.FindAsync(id);
             if (requirement != null)
                 _context.MinimumRequirements.Remove(requirement);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<MinimumRequirement?> GetById(Guid id)
@@ -52,6 +54,8 @@ namespace Data_Access.Repositories
         public async Task Add(RecommendedRequirement entity)
         {
             await _context.RecommendedRequirements.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task Delete(Guid id)

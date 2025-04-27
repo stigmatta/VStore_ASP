@@ -1,4 +1,5 @@
 ﻿using Data_Access.Interfaces;
+using Data_Access.Repositories;
 
 namespace Business_Logic.Services
 {
@@ -19,6 +20,16 @@ namespace Business_Logic.Services
         {
             await Database.GameRepository.Add(game);
             await Database.Save();
+        }
+        public async Task DeleteGame(Guid id)
+        {
+            await Database.GameRepository.Delete(id);
+            await Database.Save();
+        }
+        public async Task<Game> GetById(Guid id)
+        {
+            Game game = await Database.GameRepository.GetById(id);
+            return game;
         }
     }
 }

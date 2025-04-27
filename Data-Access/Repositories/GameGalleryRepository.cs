@@ -40,5 +40,11 @@ namespace Data_Access.Repositories
                 return game.GameGalleries.ToList();
             return new List<GameGallery>();
         }
+        public async Task<IList<GameGallery>> GetByGameId(Guid gameId)
+        {
+            return await _context.GameGalleries
+                .Where(gg => gg.GameId == gameId)
+                .ToListAsync();
+        }
     }
 }

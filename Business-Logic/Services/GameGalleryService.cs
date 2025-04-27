@@ -14,6 +14,24 @@ namespace Business_Logic.Services
             await Database.GameGalleryRepository.Add(gameGallery);
             await Database.Save();
         }
+        public async Task<IList<GameGallery>> GetByGameId(Guid gameId)
+        {
+            try
+            {
+                var gallery = await Database.GameGalleryRepository.GetByGameId(gameId);
+
+                if (gallery == null || !gallery.Any())
+                {
+                    return new List<GameGallery>();
+                }
+
+                return gallery;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
     }
 }
