@@ -20,6 +20,13 @@ namespace VStore.Controllers
             _userService = userService;
             _logger = logger;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var isAuthorized = Request.Cookies.ContainsKey("username");
+            return Ok(isAuthorized);
+        }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationDTO regDTO)
         {
@@ -63,6 +70,15 @@ namespace VStore.Controllers
                 _logger.LogInformation("Invalid credentials");
                 return BadRequest("Invalid credentials");
             }
+            if (Request.Cookies.Count != 0)
+            {
+                foreach (var cookie in Request.Cookies.Keys)
+                {
+                    Response.Cookies.Delete(cookie);
+                }
+            }
+
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -75,6 +91,23 @@ namespace VStore.Controllers
             Response.Cookies.Append("userId", user.Id.ToString(), cookieOptions);
 
             return Ok("Login successful");
+        }
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            _logger.LogInformation("Logging out...");
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddHours(2)
+            };
+            Response.Cookies.Delete("username",cookieOptions);
+            Response.Cookies.Delete("userId", cookieOptions);
+            Response.Cookies.Delete("isAdmin", cookieOptions);
+            _logger.LogInformation($"Cookies after deletion: {string.Join(", ", Request.Cookies.Keys)}"); 
+            return Ok("Logged out");
         }
     }
 }

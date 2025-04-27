@@ -30,13 +30,22 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CookieAdminPolicy", policy =>
     {
-        policy.RequireAuthenticatedUser(); 
         policy.RequireAssertion(context =>
         {
             var httpContext = context.Resource as HttpContext;
             return httpContext?.Request.Cookies["isAdmin"] == "True";
         });
     });
+    options.AddPolicy("CookieUserPolicy", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            var httpContext = context.Resource as HttpContext;
+            return httpContext?.Request.Cookies.TryGetValue("username", out var username) == true
+                   && !string.IsNullOrEmpty(username);
+        });
+    });
+
 });
 
 builder.Services.AddControllers();

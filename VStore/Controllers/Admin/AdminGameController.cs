@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Business_Logic.Services;
 using VStore.DTO.Game;
-using Microsoft.AspNetCore.Hosting.Server;
 
 [ApiController]
 [Route("api/admin/games")]
