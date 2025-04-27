@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace VStore.Controllers.Admin
 {
     [Route("api/admin")]
-    //[Authorize(Policy = "CookieAdminPolicy")]
+    [Authorize(Policy = "CookieAdminPolicy")]
     public class AdminController : Controller
     {
         private readonly ILogger<UserController> _logger;
@@ -15,7 +15,7 @@ namespace VStore.Controllers.Admin
         [HttpGet]
         public IActionResult Index()
         {
-            return Ok("hello world");
+            return Ok();
         }
     }
 }

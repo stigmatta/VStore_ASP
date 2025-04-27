@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Data_Access.Models;
-using VStore.DTO.User;
+using Data_Transfer_Object.DTO.User;
 
 namespace Business_Logic.Mappers.UserProfile
 {

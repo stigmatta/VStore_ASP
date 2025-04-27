@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Business_Logic.Services;
-using VStore.DTO.Game;
-using Microsoft.AspNetCore.Hosting.Server;
-using Data_Access.Models;
+using Data_Transfer_Object.DTO.Game;
 
 [ApiController]
 [Route("api/admin/games")]
-//[Authorize(Policy = "CookieAdminPolicy")]
 public class AdminGameController : ControllerBase
 {
     private readonly GameService _gameService;
@@ -48,7 +45,7 @@ public class AdminGameController : ControllerBase
                 Description = request.Description,
                 Price = request.Price,
                 Discount = request.Discount,
-                LogoPath = logoPath,
+                Logo = logoPath,
                 Developer = request.Developer,
                 RecommendedRequirementId = request.RecommendedRequirementId,
                 MinimumRequirementId = request.MinimumRequirementId,
@@ -102,9 +99,9 @@ public class AdminGameController : ControllerBase
 
     private async Task DeleteGameFiles(Game game)
     {
-        if (!string.IsNullOrEmpty(game.LogoPath))
+        if (!string.IsNullOrEmpty(game.Logo))
         {
-            var logoPath = Path.Combine(_env.ContentRootPath, "wwwroot", game.LogoPath.TrimStart('/'));
+            var logoPath = Path.Combine(_env.ContentRootPath, "wwwroot", game.Logo.TrimStart('/'));
             if (System.IO.File.Exists(logoPath))
             {
                 System.IO.File.Delete(logoPath);

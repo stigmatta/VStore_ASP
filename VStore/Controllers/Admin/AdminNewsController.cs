@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Business_Logic.Services;
 using Data_Access.Models;
-using Microsoft.AspNetCore.Hosting;
 using Data_Transfer_Object.DTO;
 
 namespace VStore.Controllers.Admin
@@ -12,11 +11,13 @@ namespace VStore.Controllers.Admin
     {
         private readonly NewsService _newsService;
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<AdminNewsController> _logger;
 
-        public AdminNewsController(NewsService newsService, IWebHostEnvironment env)
+        public AdminNewsController(NewsService newsService, IWebHostEnvironment env, ILogger<AdminNewsController> logger)
         {
             _newsService = newsService;
             _env = env;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -24,7 +25,7 @@ namespace VStore.Controllers.Admin
         {
             try
             {
-                var news = await _newsService.GetAllGames();
+                var news = await _newsService.GetAll();
                 return Ok(news);
             }
             catch (Exception ex)
@@ -58,6 +59,8 @@ namespace VStore.Controllers.Admin
                 if (request.PhotoFile == null || request.PhotoFile.Length == 0)
                     return BadRequest("Фотография обязательна");
 
+                _logger.LogInformation($"Добавляетс новость:");
+
                 string photoPath = await SaveFileAsync(request.PhotoFile, "news");
 
                 var news = new News
@@ -69,6 +72,7 @@ namespace VStore.Controllers.Admin
                 };
 
                 await _newsService.AddNews(news);
+                _logger.LogInformation($"Добавлена новость: {news.Title}");
                 return Ok(new { Success = true, NewsId = news.Id });
             }
             catch (Exception ex)

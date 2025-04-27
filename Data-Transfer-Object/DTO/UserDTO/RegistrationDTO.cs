@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VStore.DTO.User
+namespace Data_Transfer_Object.DTO.User
 {
     public class RegistrationDTO
     {

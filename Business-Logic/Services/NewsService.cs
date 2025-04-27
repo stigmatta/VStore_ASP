@@ -12,7 +12,7 @@ namespace Business_Logic.Services
             Database = unitOfWork;
         }
 
-        public async Task<IEnumerable<News>> GetAllGames()
+        public async Task<IEnumerable<News>> GetAll()
         {
             return await Database.NewsRepository.GetAll();
         }

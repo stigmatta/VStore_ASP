@@ -1,32 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Business_Logic.Services;
 using Data_Access.Models;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Data_Transfer_Object.DTO;
+using AutoMapper;
 
 [ApiController]
 [Route("api/admin/reqs")]
-//[Authorize(Policy = "CookieAdminPolicy")]
 public class AdminReqController : ControllerBase
 {
     private readonly IRequirementsService _requirementsService;
+    private readonly IMapper _mapper;
 
-    public AdminReqController(IRequirementsService requirementsService)
+    public AdminReqController(IRequirementsService requirementsService,IMapper mapper)
     {
         _requirementsService = requirementsService;
+        _mapper = mapper;
     }
 
     [HttpPost("add-minreq")]
-    public async Task<IActionResult> AddMinReq([FromBody] MinimumRequirement newreq)
+    public async Task<IActionResult> AddMinReq([FromBody] MinimumRequirementDTO newreq)
     {
-        await _requirementsService.AddMinimumRequirement(newreq);
+        var req = _mapper.Map<MinimumRequirement>(newreq);
+        await _requirementsService.AddMinimumRequirement(req);
         return Ok(new { success = true });
     }
 
     [HttpPost("add-recreq")]
-    public async Task<IActionResult> AddRecReq([FromBody] RecommendedRequirement newreq)
+    public async Task<IActionResult> AddRecReq([FromBody] RecommendedRequirementDTO newreq)
     {
-        await _requirementsService.AddRecommendedRequirement(newreq);
+        var req = _mapper.Map<RecommendedRequirement>(newreq);
+        await _requirementsService.AddRecommendedRequirement(req);
         return Ok(new { success = true });
     }
     [HttpDelete("min/{id}")]

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Data_Access.Models;
 using Microsoft.AspNetCore.Mvc;
-using VStore.DTO.User;
+using Data_Transfer_Object.DTO.User;
 using Business_Logic.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -106,7 +106,6 @@ namespace VStore.Controllers
             Response.Cookies.Delete("username",cookieOptions);
             Response.Cookies.Delete("userId", cookieOptions);
             Response.Cookies.Delete("isAdmin", cookieOptions);
-            _logger.LogInformation($"Cookies after deletion: {string.Join(", ", Request.Cookies.Keys)}"); 
             return Ok("Logged out");
         }
     }

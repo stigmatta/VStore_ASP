@@ -1,4 +1,4 @@
-﻿namespace VStore.DTO.Game
+﻿namespace Data_Transfer_Object.DTO.Game
 {
     public class GameGalleryDTO
     {
