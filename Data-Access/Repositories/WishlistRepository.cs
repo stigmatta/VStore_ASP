@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repositories
 {
-    public class WishlistRepository:IRepository<Wishlist>
+    public class WishlistRepository:IListRepository<Wishlist>
     {
         private readonly StoreContext _context;
         public WishlistRepository(StoreContext context)
@@ -38,6 +38,11 @@ namespace Data_Access.Repositories
             if (user != null)
                 return user.Wishlist.ToList();
             return new List<Wishlist>();
+        }
+
+        public async Task<IEnumerable<Wishlist>> GetAll()
+        {
+            return await _context.Wishlists.ToListAsync();
         }
     }
 }
