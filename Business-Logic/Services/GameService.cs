@@ -1,5 +1,5 @@
 ﻿using Data_Access.Interfaces;
-using Data_Access.Repositories;
+using Data_Transfer_Object.DTO.Game;
 
 namespace Business_Logic.Services
 {
@@ -70,6 +70,54 @@ namespace Business_Logic.Services
             var wishlistGames = await _wishlistService.GetTopWishlistGames();
             return allGames.Where(x => wishlistGames.Any(w => w.GameId == x.Id)).Take(10);
         }
+
+        public async Task<Game?> GetGameByName(string title)
+        {
+            var allGames = await Database.GameRepository.GetAll();
+            var game = allGames.FirstOrDefault(x => x.Title == title); 
+            return game;
+        }
+
+        public GameDTO ConnectGameWithGallery(Game game,IList<GameGallery> gameGallery)
+        {
+            return new GameDTO
+            {
+                Title = game.Title,
+                Description = game.Description,
+                Price = game.Price,
+                Discount = game.Discount,
+                LogoLink = game.Logo,
+                Developer = game.Developer,
+                Publisher = game.Publisher,
+                PEGI = game.PEGI,
+                TrailerLink = game.TrailerLink,
+                RecommendedRequirementId = game.RecommendedRequirementId,
+                MinimumRequirementId = game.MinimumRequirementId,
+                ReleaseDate = game.ReleaseDate,
+                Gallery = gameGallery.Select(g => g.Link).ToList()
+            };
+        }
+        //public void LogGame(GameDTO game)
+        //{
+        //    Console.WriteLine($"Title: {game.Title}");
+        //    Console.WriteLine($"Description: {game.Description}");
+        //    Console.WriteLine($"Price: {game.Price}");
+        //    Console.WriteLine($"Discount: {game.Discount}");
+        //    Console.WriteLine($"LogoLink: {game.LogoLink}");
+        //    Console.WriteLine($"Developer: {game.Developer}");
+        //    Console.WriteLine($"Publisher: {game.Publisher}");
+        //    Console.WriteLine($"PEGI: {game.PEGI}");
+        //    Console.WriteLine($"TrailerLink: {game.TrailerLink}");
+        //    Console.WriteLine($"RecommendedRequirementId: {game.RecommendedRequirementId}");
+        //    Console.WriteLine($"MinimumRequirementId: {game.MinimumRequirementId}");
+        //    Console.WriteLine($"ReleaseDate: {game.ReleaseDate}");
+        //    foreach (var link in game.Gallery)
+        //    {
+        //        Console.WriteLine($"Gallery Link: {link}");
+        //    }
+        //}
+
+
 
         //public async Task<IEnumerable<Game>> GetTopRated()
         //{
