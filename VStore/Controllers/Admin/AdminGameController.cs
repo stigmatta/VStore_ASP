@@ -49,7 +49,10 @@ public class AdminGameController : ControllerBase
                 Developer = request.Developer,
                 RecommendedRequirementId = request.RecommendedRequirementId,
                 MinimumRequirementId = request.MinimumRequirementId,
-                ReleaseDate = request.ReleaseDate
+                ReleaseDate = request.ReleaseDate,
+                Publisher = request.Publisher,
+                PEGI = request.PEGI,
+                TrailerLink = request.TrailerLink
             };
 
             await _gameService.AddGame(game);

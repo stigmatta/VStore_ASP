@@ -9,6 +9,9 @@ public class Game
     public int? Discount { get; set; }
     public string? Logo { get; set; }
     public string? Developer { get; set; }
+    public string? Publisher { get; set; }
+    public string? PEGI { get; set; }
+    public string? TrailerLink { get; set; }
     public string? Description { get; set; }
     public DateOnly ReleaseDate { get; set; }
 

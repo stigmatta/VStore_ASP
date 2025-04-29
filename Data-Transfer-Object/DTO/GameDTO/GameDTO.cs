@@ -10,6 +10,9 @@ namespace Data_Transfer_Object.DTO.Game
         public int Discount { get; set; }
         public IFormFile LogoFile { get; set; }
         public string Developer { get; set; }
+        public string? Publisher { get; set; }
+        public string? PEGI { get; set; }
+        public string? TrailerLink { get; set; }
         public Guid RecommendedRequirementId { get; set; }
         public Guid MinimumRequirementId { get; set; }
         public DateOnly ReleaseDate { get; set; }

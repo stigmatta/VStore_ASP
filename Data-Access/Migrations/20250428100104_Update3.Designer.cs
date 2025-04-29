@@ -4,6 +4,7 @@ using Data_Access.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20250428100104_Update3")]
+    partial class Update3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,15 +296,9 @@ namespace Data_Access.Migrations
                     b.Property<Guid?>("MinimumRequirementId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PEGI")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Publisher")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("RecommendedRequirementId")
                         .HasColumnType("uniqueidentifier");
@@ -310,9 +307,6 @@ namespace Data_Access.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TrailerLink")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

@@ -81,6 +81,7 @@ builder.Services.AddAutoMapper(typeof(RegistrationProfile).Assembly);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<GameService>();
+builder.Services.AddTransient<WishlistService>();
 builder.Services.AddTransient<GameGalleryService>();
 builder.Services.AddTransient<NewsService>();
 builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
