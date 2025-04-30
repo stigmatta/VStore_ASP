@@ -31,8 +31,9 @@ namespace VStore.Controllers
             var dealOfTheWeek = _mapper.Map <List<MainPageGameDTO>>(await _gameService.GetDealOfTheWeek());
             var freeGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetFreeGames());
             var popularGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetPopularGames());
-
-            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames});
+            var wishlistGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetWishlistGames());
+            var topSellers = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetTopSellers());
+            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers});
         }
     }
 }

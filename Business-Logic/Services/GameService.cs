@@ -70,6 +70,12 @@ namespace Business_Logic.Services
             var wishlistGames = await _wishlistService.GetTopWishlistGames();
             return allGames.Where(x => wishlistGames.Any(w => w.GameId == x.Id)).Take(10);
         }
+        public async Task<IEnumerable<Game>> GetTopSellers()
+        {
+            var allGames = await Database.GameRepository.GetAll();
+            var topSellers = allGames.Where(p=>p.Price>0).Take(3);
+            return topSellers;
+        }
 
         public async Task<Game?> GetGameByName(string title)
         {
