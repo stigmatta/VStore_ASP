@@ -1,5 +1,4 @@
 ﻿using Data_Access.Models;
-using Microsoft.AspNetCore.Http;
 
 public class Game
 {

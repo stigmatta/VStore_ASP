@@ -15,6 +15,7 @@ namespace VStore.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            
             return Ok("Profile redirection");
         }
     }

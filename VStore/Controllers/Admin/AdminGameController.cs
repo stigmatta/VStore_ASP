@@ -29,7 +29,7 @@ public class AdminGameController : ControllerBase
     }
 
     [HttpPost("add-game")]
-    public async Task<IActionResult> AddGame([FromForm] GameDTO request)
+    public async Task<IActionResult> AddGame([FromForm] AdminGameDTO request)
     {
         try
         {

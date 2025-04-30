@@ -18,16 +18,14 @@ namespace Business_Logic.Services
         {
             try
             {
-                var gallery = await Database.GameGalleryRepository.GetByGameId(gameId);
+                var gallery = await Database.GameGalleryRepository.GetAll(gameId);
 
-                if (gallery == null || !gallery.Any())
-                {
+                if (gallery == null)
                     return new List<GameGallery>();
-                }
 
                 return gallery;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

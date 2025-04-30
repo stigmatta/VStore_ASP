@@ -1,13 +1,14 @@
-﻿
+﻿using Microsoft.AspNetCore.Http;
+
 namespace Data_Transfer_Object.DTO.Game
 {
-    public class GameDTO
+    public class AdminGameDTO
     {
         public string Title { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
         public int? Discount { get; set; }
-        public string LogoLink { get; set; }
+        public IFormFile LogoFile { get; set; }
         public string Developer { get; set; }
         public string? Publisher { get; set; }
         public string? PEGI { get; set; }
@@ -15,6 +16,6 @@ namespace Data_Transfer_Object.DTO.Game
         public Guid? RecommendedRequirementId { get; set; }
         public Guid? MinimumRequirementId { get; set; }
         public DateOnly ReleaseDate { get; set; }
-        public List<string> Gallery { get; set; } = new();
+        public List<IFormFile> GalleryFiles { get; set; } = new();
     }
 }

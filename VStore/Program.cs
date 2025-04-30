@@ -1,4 +1,5 @@
-﻿using Business_Logic.Mappers.UserProfile;
+﻿using Business_Logic.Mappers;
+using Business_Logic.Mappers.UserProfile;
 using Business_Logic.Services;
 using Data_Access.Context;
 using Data_Access.Interfaces;
@@ -75,7 +76,7 @@ builder.Services.AddCors(options =>
 });
 
 // Настройка AutoMapper
-builder.Services.AddAutoMapper(typeof(RegistrationProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
 
 // Регистрация сервисов и репозиториев
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

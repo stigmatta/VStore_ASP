@@ -1,6 +1,5 @@
 ﻿using Data_Access.Context;
 using Data_Access.Interfaces;
-using Data_Access.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access.Repositories
@@ -32,15 +31,6 @@ namespace Data_Access.Repositories
             _context.Entry(entity).State = EntityState.Modified;
         }
         public async Task<IList<GameGallery>> GetAll(Guid gameId)
-        {
-            var game = await _context.Games
-                .Include(g => g.GameGalleries)
-                .FirstOrDefaultAsync(g => g.Id == gameId);
-            if (game != null)
-                return game.GameGalleries.ToList();
-            return new List<GameGallery>();
-        }
-        public async Task<IList<GameGallery>> GetByGameId(Guid gameId)
         {
             return await _context.GameGalleries
                 .Where(gg => gg.GameId == gameId)
