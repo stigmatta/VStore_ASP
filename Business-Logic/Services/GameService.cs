@@ -34,21 +34,28 @@ namespace Business_Logic.Services
             return game;
         }
 
-        public async Task<IEnumerable<Game>> GetRecentGames()
+        public async Task<IEnumerable<Game>> GetReleasedGames()
         {
             var allGames = await Database.GameRepository.GetAll();
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            return allGames.Where(x => x.ReleaseDate <= today);
+        }
+
+        public async Task<IEnumerable<Game>> GetRecentGames()
+        {
+            var allGames = await GetReleasedGames();
             var recentGames = allGames.OrderByDescending(x => x.ReleaseDate).Take(10);
             return recentGames;
         }
         public async Task <IEnumerable<Game>> GetOnSale()
         {
-            var allGames = await Database.GameRepository.GetAll();
+            var allGames = await GetReleasedGames();
             var onSaleGames = allGames.Where(x => x.Discount > 0).Take(10);
             return onSaleGames;
         }
         public async Task<IEnumerable<Game>> GetDealOfTheWeek()
         {
-            var allGames = await Database.GameRepository.GetAll();
+            var allGames = await GetReleasedGames();
             var dealOfTheWeek = allGames.OrderByDescending(x => x.Discount).Take(3);
             return dealOfTheWeek;
         }
@@ -60,7 +67,7 @@ namespace Business_Logic.Services
         }
         public async Task<IEnumerable<Game>> GetPopularGames()
         {
-            var allGames = await Database.GameRepository.GetAll();
+            var allGames = await GetReleasedGames();
             var popularGames = allGames.OrderByDescending(x => x.Reviews.Count).Take(10);
             return popularGames;
         }
@@ -72,7 +79,7 @@ namespace Business_Logic.Services
         }
         public async Task<IEnumerable<Game>> GetTopSellers()
         {
-            var allGames = await Database.GameRepository.GetAll();
+            var allGames = await GetReleasedGames();
             var topSellers = allGames.Where(p=>p.Price>0).Take(3);
             return topSellers;
         }
@@ -82,6 +89,14 @@ namespace Business_Logic.Services
             var allGames = await Database.GameRepository.GetAll();
             var game = allGames.FirstOrDefault(x => x.Title == title); 
             return game;
+        }
+
+        public async Task<IEnumerable<Game>> GetUpcoming()
+        {
+            var allGames = await Database.GameRepository.GetAll();
+            var upcoming = allGames.Where(x => x.ReleaseDate > DateOnly.FromDateTime(DateTime.Now)).Take(10);
+            return upcoming;
+            
         }
 
         public GameDTO ConnectGameWithGallery(Game game,IList<GameGallery> gameGallery)

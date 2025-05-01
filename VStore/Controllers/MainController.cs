@@ -23,7 +23,7 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index()
         {
             _logger.LogInformation("Main page visited");
-            var mainGame = await _gameService.GetGameByName("Dota 2");
+            var mainGame = await _gameService.GetGameByName("Dead by Daylight");
             var mainGameGallery = await _gameGalleryService.GetByGameId(mainGame.Id);
             var mainGameWithGallery = _gameService.ConnectGameWithGallery(mainGame, mainGameGallery);
             var discoverNew = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetRecentGames());
@@ -33,7 +33,8 @@ namespace VStore.Controllers
             var popularGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetPopularGames());
             var wishlistGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetWishlistGames());
             var topSellers = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetTopSellers());
-            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers});
+            var upcoming = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUpcoming());
+            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers,upcoming});
         }
     }
 }
