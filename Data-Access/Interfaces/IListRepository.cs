@@ -2,6 +2,6 @@
 {
     public interface IListRepository<T> : IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAll(); 
+        Task<IEnumerable<T?>> GetAll(); 
     }
 }

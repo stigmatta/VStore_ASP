@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (userAchievement != null)
                 _context.UserAchievements.Remove(userAchievement);
         }
-        public async Task<UserAchievement?> GetById(Guid id)
+        public async Task<UserAchievement?> GetById(Guid? id)
         {
             return await _context.UserAchievements.FindAsync(id);
         }

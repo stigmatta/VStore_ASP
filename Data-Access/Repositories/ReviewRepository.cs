@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (review != null)
                 _context.Reviews.Remove(review);
         }
-        public async Task<Review?> GetById(Guid id)
+        public async Task<Review?> GetById(Guid? id)
         {
             return await _context.Reviews.FindAsync(id);
         }

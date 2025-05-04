@@ -30,7 +30,7 @@ namespace Data_Access.Repositories
              return await _context.Games.ToListAsync();
         }
 
-        public async Task<Game?> GetById(Guid id)
+        public async Task<Game?> GetById(Guid? id)
         {
             return await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
         }

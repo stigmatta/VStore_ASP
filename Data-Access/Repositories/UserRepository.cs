@@ -29,7 +29,7 @@ namespace Data_Access.Repositories
                 .ToListAsync();
         }
 
-        public async Task<User?> GetById(Guid id)
+        public async Task<User?> GetById(Guid? id)
         {
            return await _context.Users.FindAsync(id);
         }

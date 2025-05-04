@@ -5,7 +5,7 @@ namespace VStore.Controllers.Admin
 {
     [Route("api/admin")]
     [Authorize(Policy = "CookieAdminPolicy")]
-    public class AdminController : Controller
+    public class AdminController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         public AdminController(ILogger<UserController> logger)

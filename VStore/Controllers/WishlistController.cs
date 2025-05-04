@@ -5,7 +5,7 @@ namespace VStore.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(Policy = "CookieUserPolicy")]
-    public class WishlistController : Controller
+    public class WishlistController : ControllerBase
     {
         [HttpGet]
         public IActionResult Index()

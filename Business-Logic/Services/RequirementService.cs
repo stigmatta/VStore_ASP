@@ -1,7 +1,5 @@
 ﻿using Data_Access.Interfaces;
 using Data_Access.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Business_Logic.Services
 {

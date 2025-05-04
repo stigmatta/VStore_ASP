@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace VStore.Controllers
 {
     [Route("api/[controller]")]
-    public class NewsController:Controller
+    public class NewsController: ControllerBase
     {
         private readonly NewsService _newsService;
         public NewsController(NewsService newsService)

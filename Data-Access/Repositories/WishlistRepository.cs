@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (wishlist != null)
                 _context.Wishlists.Remove(wishlist);
         }
-        public async Task<Wishlist?> GetById(Guid id)
+        public async Task<Wishlist?> GetById(Guid? id)
         {
             return await _context.Wishlists.FindAsync(id);
         }
@@ -30,7 +30,7 @@ namespace Data_Access.Repositories
         {
             _context.Entry(entity).State = EntityState.Modified;
         }
-        public async Task<IList<Wishlist>> GetAll(Guid userId)
+        public async Task<IList<Wishlist>> GetAll(Guid?  userId)
         {
             var user = await _context.Users
                 .Include(u => u.Wishlist)
