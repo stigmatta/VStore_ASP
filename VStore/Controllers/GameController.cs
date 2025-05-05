@@ -53,12 +53,14 @@ namespace VStore.Controllers
                     return BadRequest("Invalid game ID");
                 var minimum = await _gameService.GetMinimumRequirement(request.Id);
                 var recommended = await _gameService.GetRecommendedRequirement(request.Id);
-                _logger.LogInformation(minimum.Graphics.ToString());
-                _logger.LogInformation(recommended.Graphics.ToString());
-                return Ok(new 
-                    { minimum,
-                      recommended
-                    });
+                var userId = Request.Cookies["userId"];
+                _logger.LogInformation("USER ID {0}", userId);
+                return Ok(new
+                {
+                    minimum,
+                    recommended,
+                    userId
+                });
             }
             catch (Exception ex)
             {
