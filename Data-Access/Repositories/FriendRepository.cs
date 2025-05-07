@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (friend != null)
                 _context.Friends.Remove(friend);
         }
-        public async Task<Friend?> GetById(Guid id)
+        public async Task<Friend?> GetById(Guid? id)
         {
             return await _context.Friends.FindAsync(id);
         }

@@ -50,8 +50,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
         {
             var httpContext = context.Resource as HttpContext;
-            return httpContext?.Request.Cookies.TryGetValue("username", out var username) == true
-                   && !string.IsNullOrEmpty(username);
+            return !string.IsNullOrEmpty(httpContext?.Request.Cookies["userId"]);
         });
     });
 

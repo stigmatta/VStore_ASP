@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace VStore.Controllers
 {
     [Route("api/[controller]")]
-    public class MainController:Controller
+    public class MainController:ControllerBase
     {
         private readonly ILogger<MainController> _logger;
         private readonly GameService _gameService;
@@ -23,7 +23,7 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index()
         {
             _logger.LogInformation("Main page visited");
-            var mainGame = await _gameService.GetGameByName("Dota 2");
+            var mainGame = await _gameService.GetGameByName("Dead by Daylight");
             var mainGameGallery = await _gameGalleryService.GetByGameId(mainGame.Id);
             var mainGameWithGallery = _gameService.ConnectGameWithGallery(mainGame, mainGameGallery);
             var discoverNew = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetRecentGames());
@@ -33,7 +33,9 @@ namespace VStore.Controllers
             var popularGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetPopularGames());
             var wishlistGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetWishlistGames());
             var topSellers = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetTopSellers());
-            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers});
+            var under5Games = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUnder5Dollars());
+            var upcoming = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUpcoming());
+            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers,under5Games,upcoming});
         }
     }
 }

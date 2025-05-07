@@ -5,6 +5,6 @@
         public Task Add(T entity);
         public void Update(T entity);
         public Task Delete(Guid id);
-        public Task<T?> GetById(Guid id);
+        public Task<T?> GetById(Guid? id);
     }
 }

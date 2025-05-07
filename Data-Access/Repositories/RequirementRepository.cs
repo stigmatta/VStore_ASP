@@ -27,7 +27,7 @@ namespace Data_Access.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<MinimumRequirement?> GetById(Guid id)
+        public async Task<MinimumRequirement?> GetById(Guid? id)
         {
             return await _context.MinimumRequirements.FindAsync(id);
         }
@@ -65,7 +65,7 @@ namespace Data_Access.Repositories
                 _context.RecommendedRequirements.Remove(requirement);
         }
 
-        public async Task<RecommendedRequirement?> GetById(Guid id)
+        public async Task<RecommendedRequirement?> GetById(Guid? id)
         {
             return await _context.RecommendedRequirements.FindAsync(id);
         }

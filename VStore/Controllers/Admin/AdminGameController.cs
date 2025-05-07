@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Business_Logic.Services;
 using Data_Transfer_Object.DTO.Game;
 
@@ -33,6 +32,7 @@ public class AdminGameController : ControllerBase
     {
         try
         {
+            Console.WriteLine("hello");
             if (request.LogoFile == null || request.LogoFile.Length == 0)
                 return BadRequest("Логотип обязателен");
 

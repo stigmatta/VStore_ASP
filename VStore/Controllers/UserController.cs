@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace VStore.Controllers
 {
     [Route("api/")]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly UserService _userService;

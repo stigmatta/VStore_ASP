@@ -5,7 +5,7 @@ namespace VStore.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(Policy = "CookieUserPolicy")]
-    public class CartController: Controller
+    public class CartController: ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         public CartController(ILogger<UserController> logger)

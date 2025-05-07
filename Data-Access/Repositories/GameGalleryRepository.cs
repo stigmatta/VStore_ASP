@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (gameGallery != null)
                 _context.GameGalleries.Remove(gameGallery);
         }
-        public async Task<GameGallery?> GetById(Guid id)
+        public async Task<GameGallery?> GetById(Guid? id)
         {
             return await _context.GameGalleries.FindAsync(id);
         }

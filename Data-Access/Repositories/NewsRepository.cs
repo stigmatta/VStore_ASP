@@ -24,7 +24,7 @@ namespace Data_Access.Repositories
                 _context.News.Remove(news);
         }
 
-        public async Task<News?> GetById(Guid id)
+        public async Task<News?> GetById(Guid? id)
         {
             return await _context.News.FindAsync(id);
         }

@@ -26,7 +26,7 @@ namespace Data_Access.Repositories
                 _context.BlockedUsers.Remove(blockedUser);
         }
 
-        public async Task<BlockedUser?> GetById(Guid id)
+        public async Task<BlockedUser?> GetById(Guid? id)
         {
             return await _context.BlockedUsers.FindAsync(id);
         }

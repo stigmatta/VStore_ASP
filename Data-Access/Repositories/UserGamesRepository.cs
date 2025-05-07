@@ -22,7 +22,7 @@ namespace Data_Access.Repositories
             if (userGame != null)
                 _context.UserGames.Remove(userGame);
         }
-        public async Task<UserGame?> GetById(Guid id)
+        public async Task<UserGame?> GetById(Guid? id)
         {
             return await _context.UserGames.FindAsync(id);
         }
