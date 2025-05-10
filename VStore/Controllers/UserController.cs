@@ -109,5 +109,6 @@ namespace VStore.Controllers
             Response.Cookies.Delete("isAdmin", cookieOptions);
             return Ok("Logged out");
         }
+        
     }
 }
