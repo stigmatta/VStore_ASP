@@ -26,6 +26,11 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index()
         {
             var isAuthorized = Request.Cookies.ContainsKey("username");
+            if(isAuthorized == true)
+            {
+                var userId = Request.Cookies["userId"];
+                return Ok(new { isAuthorized, userId });
+            }
             return Ok(isAuthorized);
         }
         [HttpPost("register")]
