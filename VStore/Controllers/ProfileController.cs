@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Business_Logic.Services;
+using Data_Transfer_Object.DTO.Game;
+using Data_Transfer_Object.DTO.GameDTO;
 using Data_Transfer_Object.DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,17 +43,22 @@ namespace VStore.Controllers
             if(userGuid == Guid.Parse(Request.Cookies["userId"]))
                 isSelfProfile = true;
             var userGames = await _userGamesService.GetAllUserGames(userGuid);
-            _logger.LogInformation($"User game first title:{userGames.First().Title}");
-
-            return Ok(new { profile, isSelfProfile,userGames });
+            var userGamesDTO = await _userGamesService.MapUserGames(userGames);
+            var profileResponse = new ProfileResponse
+            {
+                Profile = profile,
+                IsSelfProfile = isSelfProfile,
+                UserGames = userGamesDTO
+            };
+            return Ok(profileResponse);
         }
 
-        //public class ProfileResponse()
-        //{
-        //    public ProfileDTO Profile { get; set; }
-        //    public bool IsSelfProfile { get; set; }
-        //    public List<UserGameDTO> UserGames { get; set; }
-        //}
+        public class ProfileResponse()
+        {
+            public ProfileDTO Profile { get; set; }
+            public bool IsSelfProfile { get; set; }
+            public IEnumerable<ProfileGameDTO> UserGames { get; set; }
+        }
 
     }
 }
