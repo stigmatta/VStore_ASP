@@ -15,6 +15,7 @@ namespace Data_Access.Interfaces
         GameGalleryRepository GameGalleryRepository { get; }
         UserGamesRepository UserGameRepository { get; }
         UserAchievementRepository UserAchievementRepository { get; }
+        AchievementRepository AchievementRepository { get; }
         FriendRepository FriendRepository { get; }
         ReviewRepository ReviewRepository { get; }
         BlockedUserRepository BlockedUserRepository { get; }

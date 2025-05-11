@@ -4,6 +4,7 @@
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string? Title { get; set;}
+        public string? Description { get; set;}
         public string? Photo { get; set; }
         public Guid GameId { get; set; }
         public Game Game { get; set; } = null!;
