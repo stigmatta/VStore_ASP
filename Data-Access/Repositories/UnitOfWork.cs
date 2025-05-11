@@ -12,6 +12,7 @@ namespace Data_Access.Repositories
         private GameGalleryRepository _gameGalleryRepository;
         private UserGamesRepository _userGameRepository;
         private UserAchievementRepository _userAchievementRepository;
+        private AchievementRepository _achievementRepository;
         private FriendRepository _friendRepository;
         private ReviewRepository _reviewRepository;
         private BlockedUserRepository _blockedUserRepository;
@@ -60,10 +61,18 @@ namespace Data_Access.Repositories
             }
         }
 
-        public UserAchievementRepository UserAchievementRepository {
+        public UserAchievementRepository UserAchievementRepository
+        {
             get
             {
                 return _userAchievementRepository ?? new UserAchievementRepository(_context);
+            }
+        }
+        public AchievementRepository AchievementRepository
+        {
+            get
+            {
+                return _achievementRepository ?? new AchievementRepository(_context);
             }
         }
 

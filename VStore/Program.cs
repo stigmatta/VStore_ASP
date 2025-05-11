@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +75,7 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader());
 });
 
+
 // Настройка AutoMapper
 builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
 
@@ -85,6 +87,7 @@ builder.Services.AddTransient<GameService>();
 builder.Services.AddTransient<WishlistService>();
 builder.Services.AddTransient<GameGalleryService>();
 builder.Services.AddTransient<NewsService>();
+builder.Services.AddTransient<AchievementService>();
 builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
 builder.Services.AddScoped<IListRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
 builder.Services.AddScoped<IRequirementsService, RequirementsService>();

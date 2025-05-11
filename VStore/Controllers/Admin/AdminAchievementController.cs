@@ -2,6 +2,7 @@
 using Business_Logic.Services;
 using Data_Transfer_Object.DTO;
 using Data_Access.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace VStore.Controllers.Admin
@@ -11,17 +12,20 @@ namespace VStore.Controllers.Admin
     public class AdminAchievementController : ControllerBase
     {
         private readonly AchievementService _achiService;
+        private readonly GameService _gameService;
         private readonly IWebHostEnvironment _env;
         private readonly ILogger<AdminAchievementController> _logger;
 
         public AdminAchievementController(
             AchievementService achiService,
             IWebHostEnvironment env,
-            ILogger<AdminAchievementController> logger)
+            ILogger<AdminAchievementController> logger,
+            GameService gameService)
         {
             _achiService = achiService;
             _env = env;
             _logger = logger;
+            _gameService = gameService;
         }
 
         [HttpGet("game-{gameId}")]
@@ -57,48 +61,138 @@ namespace VStore.Controllers.Admin
             }
         }
 
-        [HttpPost]
+        [HttpPost("add-achievement")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<Guid>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> AddAchievement([FromForm] AchievementDTO request)
         {
             try
             {
+                // 1. Валидация модели
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    _logger.LogWarning("Invalid model state: {Errors}", string.Join(", ", errors));
+                    return BadRequest(new ApiResponse
+                    {
+                        Success = false,
+                        Error = "Invalid request data",
+                        ValidationErrors = errors
+                    });
+                }
+
+                // 2. Проверка изображения
                 if (request.Photo == null || request.Photo.Length == 0)
-                    return BadRequest("Photo is required");
+                {
+                    _logger.LogWarning("Photo file is missing");
+                    return BadRequest(new ApiResponse
+                    {
+                        Success = false,
+                        Error = "Photo is required"
+                    });
+                }
 
-                _logger.LogInformation("Adding new achievement: {AchievementTitle}", request.Title);
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(request.Photo.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    _logger.LogWarning("Invalid file format: {Extension}", fileExtension);
+                    return BadRequest(new ApiResponse
+                    {
+                        Success = false,
+                        Error = "Invalid file format",
+                        Details = $"Allowed formats: {string.Join(", ", allowedExtensions)}"
+                    });
+                }
 
-                string photoPath = await SaveFileAsync(request.Photo, "achievements");
 
+                _logger.LogInformation("Adding new achievement: {Title}", request.Title);
+
+                string photoPath;
+                try
+                {
+                    photoPath = await SaveFileAsync(request.Photo, "achievements");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error saving achievement photo");
+                    return StatusCode(500, new ApiResponse
+                    {
+                        Success = false,
+                        Error = "Error saving file",
+                        Details = ex.Message
+                    });
+                }
                 var achievement = new Achievement
                 {
                     Id = Guid.NewGuid(),
                     Title = request.Title,
                     Description = request.Description,
                     Photo = photoPath,
-                    GameId = request.GameId
+                    GameId = request.GameId,
                 };
 
-                await _achiService.AddAchievement(achievement);
+                try
+                {
+                    await _achiService.AddAchievement(achievement);
+                }
+                catch (DbUpdateException dbEx)
+                {
+                    _logger.LogError(dbEx, "Database error while adding achievement");
 
-                _logger.LogInformation("Achievement added successfully: {AchievementTitle} (ID: {AchievementId})",
-                    achievement.Title, achievement.Id);
+                    await DeleteFileAsync(photoPath);
 
-                return Ok(new
+                    return StatusCode(500, new ApiResponse
+                    {
+                        Success = false,
+                        Error = "Database error",
+                        Details = dbEx.InnerException?.Message ?? dbEx.Message
+                    });
+                }
+
+                _logger.LogInformation("Achievement added successfully. ID: {Id}", achievement.Id);
+
+                return Ok(new ApiResponse<Guid>
                 {
                     Success = true,
-                    AchievementId = achievement.Id,
-                    Message = "Achievement added successfully"
+                    Data = achievement.Id,
+                    Message = "Achievement added successfully",
+                    Metadata = new
+                    {
+                        ImageUrl = $"{Request.Scheme}://{Request.Host}/{photoPath.TrimStart('/')}"
+                    }
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding new achievement");
-                return StatusCode(500, new
+                _logger.LogError(ex, "Unexpected error adding achievement");
+                return StatusCode(500, new ApiResponse
                 {
-                    Error = "Failed to add achievement",
+                    Success = false,
+                    Error = "Internal server error",
                     Details = ex.Message
                 });
             }
+        }
+
+        public class ApiResponse
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; }
+            public string Error { get; set; }
+            public string Details { get; set; }
+            public IEnumerable<string> ValidationErrors { get; set; }
+        }
+
+        public class ApiResponse<T> : ApiResponse
+        {
+            public T Data { get; set; }
+            public object Metadata { get; set; }
         }
 
         [HttpDelete("{id}")]
