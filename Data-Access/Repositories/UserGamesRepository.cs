@@ -32,12 +32,11 @@ namespace Data_Access.Repositories
         }
         public async Task<IList<UserGame>> GetAll(Guid userId)
         {
-            var user = await _context.Users
-                .Include(u => u.UserGames)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if (user != null)
-                return user.UserGames.ToList();
-            return new List<UserGame>();
+            return await _context.UserGames
+                .Where(ug => ug.UserId == userId)
+                .Include(ug => ug.Game) 
+                .AsNoTracking()        
+                .ToListAsync();
         }
     }
 }

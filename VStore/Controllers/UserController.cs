@@ -21,10 +21,16 @@ namespace VStore.Controllers
             _logger = logger;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var isAuthorized = Request.Cookies.ContainsKey("username");
+            if(isAuthorized == true)
+            {
+                var userId = Request.Cookies["userId"];
+                return Ok(new { isAuthorized, userId });
+            }
             return Ok(isAuthorized);
         }
         [HttpPost("register")]
@@ -108,5 +114,6 @@ namespace VStore.Controllers
             Response.Cookies.Delete("isAdmin", cookieOptions);
             return Ok("Logged out");
         }
+        
     }
 }

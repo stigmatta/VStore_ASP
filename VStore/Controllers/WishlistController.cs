@@ -31,6 +31,23 @@ namespace VStore.Controllers
             return Ok(games);
         }
 
+        [HttpPost("check-game")]
+        public async Task<IActionResult> CheckIfExists([FromBody] Guid gameId)
+        {
+            var userId = Request.Cookies["userId"];
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("User ID is missing");
+            _logger.LogInformation($"GAME ID {gameId}");
+
+            var games = await _wishlistService.GetUserWishlist(Guid.Parse(userId));
+            var isExists = games.Any(g => g.UserId == Guid.Parse(userId) && g.GameId == gameId);
+
+            if (isExists)
+                return BadRequest();
+            else
+                return Ok();
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> AddToWishlist([FromBody] Guid gameId)
         {
@@ -74,6 +91,8 @@ namespace VStore.Controllers
             }
             return Ok("Game removed from wishlist");
         }
+
+
 
     }
 }

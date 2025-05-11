@@ -1,4 +1,7 @@
-﻿namespace Data_Transfer_Object.DTO.Game
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Data_Transfer_Object.DTO.Game
 {
     public class MainPageGameDTO
     {
@@ -10,4 +13,6 @@
         public DateOnly ReleaseDate { get; set; }
 
     }
+
+
 }

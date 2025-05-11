@@ -54,7 +54,6 @@ namespace VStore.Controllers
                 var minimum = await _gameService.GetMinimumRequirement(request.Id);
                 var recommended = await _gameService.GetRecommendedRequirement(request.Id);
                 var userId = Request.Cookies["userId"];
-                _logger.LogInformation("USER ID {0}", userId);
                 return Ok(new
                 {
                     minimum,

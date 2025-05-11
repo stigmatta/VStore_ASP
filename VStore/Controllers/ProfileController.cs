@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Business_Logic.Services;
+using Data_Transfer_Object.DTO.UserDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VStore.Controllers
@@ -8,15 +11,47 @@ namespace VStore.Controllers
     public class ProfileController: ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        public ProfileController(ILogger<UserController> logger)
+        private readonly IMapper _mapper;
+        private readonly UserService _userService;
+        private readonly UserGamesService _userGamesService;
+        public ProfileController(ILogger<UserController> logger,IMapper mapper,UserService userService,UserGamesService userGamesService)
         {
             _logger = logger;
+            _mapper = mapper;
+            _userService = userService;
+            _userGamesService = userGamesService;
         }
-        [HttpGet]
-        public IActionResult Index()
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetProfileInfo(string userId)
         {
-            
-            return Ok("Profile redirection");
+            var userGuid = Guid.Parse(userId);
+            bool isSelfProfile = false;
+            if (userGuid == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid user ID");
+                return BadRequest("Invalid user ID");
+            }
+            var profile = _mapper.Map<ProfileDTO>(await _userService.GetById(userGuid));
+            if (profile == null)
+            {
+                _logger.LogWarning("User not found");
+                return NotFound("User not found");
+            }
+            if(userGuid == Guid.Parse(Request.Cookies["userId"]))
+                isSelfProfile = true;
+            var userGames = await _userGamesService.GetAllUserGames(userGuid);
+            _logger.LogInformation($"User game first title:{userGames.First().Title}");
+
+            return Ok(new { profile, isSelfProfile,userGames });
         }
+
+        //public class ProfileResponse()
+        //{
+        //    public ProfileDTO Profile { get; set; }
+        //    public bool IsSelfProfile { get; set; }
+        //    public List<UserGameDTO> UserGames { get; set; }
+        //}
+
     }
 }

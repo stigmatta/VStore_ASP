@@ -80,6 +80,7 @@ builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
 // Регистрация сервисов и репозиториев
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<UserGamesService>();
 builder.Services.AddTransient<GameService>();
 builder.Services.AddTransient<WishlistService>();
 builder.Services.AddTransient<GameGalleryService>();
