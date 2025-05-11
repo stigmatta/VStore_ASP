@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Business_Logic.Services;
-using Data_Transfer_Object.DTO.Game;
+using Data_Transfer_Object.DTO.AdminDTO;
 
 [ApiController]
 [Route("api/admin/games")]

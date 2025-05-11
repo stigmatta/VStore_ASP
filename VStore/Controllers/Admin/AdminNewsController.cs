@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Business_Logic.Services;
 using Data_Access.Models;
-using Data_Transfer_Object.DTO;
+using Data_Transfer_Object.DTO.AdminDTO;
 
 namespace VStore.Controllers.Admin
 {
@@ -52,7 +52,7 @@ namespace VStore.Controllers.Admin
         }
 
         [HttpPost("add-news")]
-        public async Task<IActionResult> AddNews([FromForm] NewsDTO request)
+        public async Task<IActionResult> AddNews([FromForm] AdminNewsDTO request)
         {
             try
             {

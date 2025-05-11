@@ -34,6 +34,7 @@ namespace VStore.Controllers
         [HttpPost("order")]
         public async Task<IActionResult> AddGames([FromBody] OrderRequest request)
         {
+            Random rand = new Random();
             _logger.LogInformation($"Full request: {JsonSerializer.Serialize(request)}");
 
             if (request == null)
@@ -57,7 +58,9 @@ namespace VStore.Controllers
                     await _userGamesService.AddUserGame(new UserGame
                     {
                         UserId = Guid.Parse(userId),
-                        GameId = game.Id
+                        GameId = game.Id,
+                        CompletedPercent = rand.Next(0, 101),
+                        HoursPlayed = rand.Next(0, 1000),
                     });
                 }
                 catch (DbUpdateException)

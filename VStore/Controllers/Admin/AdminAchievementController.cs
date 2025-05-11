@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Business_Logic.Services;
-using Data_Transfer_Object.DTO;
 using Data_Access.Models;
 using Microsoft.EntityFrameworkCore;
+using Data_Transfer_Object.DTO.AdminAchievement;
 
 
 namespace VStore.Controllers.Admin
@@ -65,7 +65,7 @@ namespace VStore.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<Guid>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
-        public async Task<IActionResult> AddAchievement([FromForm] AchievementDTO request)
+        public async Task<IActionResult> AddAchievement([FromForm] AdminAchievementDTO request)
         {
             try
             {

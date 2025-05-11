@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Data_Transfer_Object.DTO.Game
+namespace Data_Transfer_Object.DTO.AdminDTO
 {
     public class AdminGameDTO
     {

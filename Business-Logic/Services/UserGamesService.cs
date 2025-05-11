@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Data_Access.Interfaces;
 using Data_Access.Models;
-using Data_Transfer_Object.DTO;
-using Data_Transfer_Object.DTO.Game;
+using Data_Transfer_Object.DTO.Achievement;
 using Data_Transfer_Object.DTO.GameDTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -39,7 +38,6 @@ namespace Business_Logic.Services
             var allGames = await Database.UserGameRepository.GetAll(userId);
             return allGames;
         }
-
         public async Task<IEnumerable<ProfileGameDTO>> MapUserGames(IEnumerable<UserGame> games)
         {
             var profileGameDTOs = new List<ProfileGameDTO>();

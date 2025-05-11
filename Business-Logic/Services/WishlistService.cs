@@ -45,6 +45,13 @@ namespace Business_Logic.Services
                 throw;
             }
         }
+
+        public async Task<List<Wishlist>> GetUserOnSale(Guid userId)
+        {
+            var result = await Database.WishlistRepository.GetByUserId(userId);
+            var withDiscount = result.Where(g => g.Game.Discount != null && g.Game.Discount > 0).ToList();
+            return withDiscount;
+        }
         public async Task RemoveFromWishlist(Guid userId,Guid gameId)
         {
             await Database.WishlistRepository.Delete(userId,gameId);

@@ -1,4 +1,5 @@
-﻿using Data_Transfer_Object.DTO.Game;
+﻿using Data_Transfer_Object.DTO.Achievement;
+using Data_Transfer_Object.DTO.Game;
 
 namespace Data_Transfer_Object.DTO.GameDTO
 {
