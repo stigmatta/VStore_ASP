@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Data_Transfer_Object.DTO
+namespace Data_Transfer_Object.DTO.NewsDTO
 {
     public class NewsDTO
     {
@@ -11,6 +16,6 @@ namespace Data_Transfer_Object.DTO
         [Required]
         public DateTime PublishedDate { get; set; }
         [Required]
-        public IFormFile PhotoFile { get; set; }
+        public string Photo { get; set; }
     }
 }

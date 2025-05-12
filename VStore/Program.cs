@@ -79,7 +79,7 @@ builder.Services.AddCors(options =>
 // Настройка AutoMapper
 builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
 
-// Регистрация сервисов и репозиториев
+builder.Services.AddScoped(typeof(IPaginationService<>), typeof(PaginationService<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<UserGamesService>();

@@ -1,5 +1,7 @@
-﻿using Azure.Core;
+﻿using AutoMapper;
+using Azure.Core;
 using Business_Logic.Services;
+using Data_Transfer_Object.DTO.Achievement;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VStore.Controllers
@@ -9,16 +11,26 @@ namespace VStore.Controllers
     {
         private readonly GameService _gameService;
         private readonly GameGalleryService _gameGalleryService;
+        private readonly IPaginationService<Game> _paginationService;
+        private readonly IMapper _mapper;
+        private readonly AchievementService _achievementService;
+
         private readonly ILogger<GameController> _logger;
         public GameController(
             GameService gameService,
             GameGalleryService gameGalleryService,
-            ILogger<GameController> logger
+            ILogger<GameController> logger,
+            IPaginationService<Game> paginationService,
+            IMapper mapper,
+            AchievementService achievementService
             )
         {
             _gameService = gameService;
             _gameGalleryService = gameGalleryService;
             _logger = logger;
+            _paginationService = paginationService;
+            _mapper = mapper;
+            _achievementService = achievementService;
         }
 
         [HttpPost]
@@ -53,12 +65,14 @@ namespace VStore.Controllers
                     return BadRequest("Invalid game ID");
                 var minimum = await _gameService.GetMinimumRequirement(request.Id);
                 var recommended = await _gameService.GetRecommendedRequirement(request.Id);
-                var userId = Request.Cookies["userId"];
+                var userId = Guid.Parse(Request.Cookies["userId"]);
+                var achievements = _mapper.Map<List<AchievementDTO>>(await _achievementService.GetAll(request.Id));
                 return Ok(new
                 {
                     minimum,
                     recommended,
-                    userId
+                    userId,
+                    achievements
                 });
             }
             catch (Exception ex)

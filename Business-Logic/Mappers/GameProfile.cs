@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Data_Access.Models;
+using Data_Transfer_Object.DTO;
 using Data_Transfer_Object.DTO.Game;
+using Data_Transfer_Object.DTO.GameDTO;
 
 namespace Business_Logic.Mappers
 {

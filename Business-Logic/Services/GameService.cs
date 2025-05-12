@@ -140,33 +140,5 @@ namespace Business_Logic.Services
                 Gallery = gameGallery.Select(g => g.Link).ToList()
             };
         }
-        //public void LogGame(GameDTO game)
-        //{
-        //    Console.WriteLine($"Title: {game.Title}");
-        //    Console.WriteLine($"Description: {game.Description}");
-        //    Console.WriteLine($"Price: {game.Price}");
-        //    Console.WriteLine($"Discount: {game.Discount}");
-        //    Console.WriteLine($"LogoLink: {game.LogoLink}");
-        //    Console.WriteLine($"Developer: {game.Developer}");
-        //    Console.WriteLine($"Publisher: {game.Publisher}");
-        //    Console.WriteLine($"PEGI: {game.PEGI}");
-        //    Console.WriteLine($"TrailerLink: {game.TrailerLink}");
-        //    Console.WriteLine($"RecommendedRequirementId: {game.RecommendedRequirementId}");
-        //    Console.WriteLine($"MinimumRequirementId: {game.MinimumRequirementId}");
-        //    Console.WriteLine($"ReleaseDate: {game.ReleaseDate}");
-        //    foreach (var link in game.Gallery)
-        //    {
-        //        Console.WriteLine($"Gallery Link: {link}");
-        //    }
-        //}
-
-
-
-        //public async Task<IEnumerable<Game>> GetTopRated()
-        //{
-        //    var allGames = await Database.GameRepository.GetAll();
-        //    var topRatedGames = allGames.OrderByDescending(x => x.Reviews.Average(x => x.Rating)).Take(10);
-        //    return topRatedGames;
-        //}
     }
 }
