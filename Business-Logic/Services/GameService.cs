@@ -120,6 +120,13 @@ namespace Business_Logic.Services
             return under5Games;
         }
 
+        public async Task<IEnumerable<Game>> GetSearchedGames(string substring)
+        {
+            var allGames = await Database.GameRepository.GetAll();
+            var searchedGames = allGames.Where(x => x.Title.ToLower().Contains(substring.ToLower())).Take(5);
+            return searchedGames;
+        }
+
         public GameDTO ConnectGameWithGallery(Game game,IList<GameGallery> gameGallery)
         {
             return new GameDTO

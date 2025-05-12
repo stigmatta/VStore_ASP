@@ -82,6 +82,36 @@ namespace VStore.Controllers
             }
         }
 
+        [HttpPost("search")]
+        public async Task<IActionResult> Search([FromBody] SearchRequest request) 
+        {
+            _logger.LogInformation($"TEXT {request.SearchTerm}");
+            try
+            {
+                var games = await _gameService.GetSearchedGames(request.SearchTerm);
+                if (games == null || !games.Any())
+                    return NotFound("No games found");
+                var gameDTO = games.Select(game => new SearchResponse { Id = game.Id, Title = game.Title }).ToList();
+                return Ok(gameDTO);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching for games");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        public class SearchRequest
+        {
+            public string SearchTerm { get; set; }
+        }
+
+        public class SearchResponse
+        {
+            public Guid Id { get; set; }
+            public string Title { get; set; }
+        }
+
 
         public class GameRequest
         {

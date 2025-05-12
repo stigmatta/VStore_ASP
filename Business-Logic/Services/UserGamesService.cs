@@ -12,14 +12,16 @@ namespace Business_Logic.Services
     {
         private readonly IUnitOfWork Database;
         private readonly GameService _gameService;
+        private readonly AchievementService _achievementService;
         private readonly ILogger<UserGamesService> _logger;
         private readonly IMapper _mapper;
-        public UserGamesService(IUnitOfWork unitOfWork,GameService gameService,ILogger<UserGamesService> logger,IMapper mapper)
+        public UserGamesService(IUnitOfWork unitOfWork,GameService gameService,ILogger<UserGamesService> logger,IMapper mapper,AchievementService achievementService)
         {
             Database = unitOfWork;
             _gameService = gameService;
             _logger = logger;
             _mapper = mapper;
+            _achievementService = achievementService;
         }
         public async Task AddUserGame(UserGame userGame)
         {
@@ -51,7 +53,7 @@ namespace Business_Logic.Services
                     Price = game.Game.Price,
                     Discount = game.Game.Discount,
                     ReleaseDate = game.Game.ReleaseDate,
-                    Achievements = _mapper.Map<IList<AchievementDTO>>(game.Game.Achievements),
+                    Achievements = _mapper.Map<IList<AchievementDTO>>(await _achievementService.GetAll(game.GameId)),
                     HoursPlayed = game.HoursPlayed,
                     CompletedPercent = game.CompletedPercent,
                     LastPlayed = game.LastPlayed
