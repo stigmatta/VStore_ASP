@@ -1,6 +1,7 @@
 ﻿using Data_Access.Interfaces;
 using Data_Access.Models;
 using Data_Transfer_Object.DTO.Game;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Business_Logic.Services
@@ -9,10 +10,12 @@ namespace Business_Logic.Services
     {
         private readonly IUnitOfWork Database;
         private readonly WishlistService _wishlistService;
-        public GameService(IUnitOfWork unitOfWork, WishlistService wishlistService)
+        private readonly ILogger<GameService> _logger;
+        public GameService(IUnitOfWork unitOfWork, WishlistService wishlistService,ILogger<GameService> logger)
         {
             Database = unitOfWork;
             _wishlistService = wishlistService;
+            _logger = logger;
         }
 
         public async Task<MinimumRequirement> GetMinimumRequirement(Guid gameId)
@@ -55,6 +58,13 @@ namespace Business_Logic.Services
             var today = DateOnly.FromDateTime(DateTime.Now);
             return allGames.Where(x => x.ReleaseDate <= today);
         }
+        public async Task<IEnumerable<Game>> GetUnreleasedGames()
+        {
+            var allGames = await Database.GameRepository.GetAll();
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            return allGames.Where(x => x.ReleaseDate > today);
+        }
+
 
         public async Task<IEnumerable<Game>> GetRecentGames()
         {
@@ -88,17 +98,71 @@ namespace Business_Logic.Services
         }
         public async Task<IEnumerable<Game>> GetWishlistGames()
         {
-            var allGames = await Database.GameRepository.GetAll();
+            var allGames = await GetUnreleasedGames();
             var wishlistGames = await _wishlistService.GetTopWishlistGames();
-            return allGames.Where(x => wishlistGames.Any(w => w.GameId == x.Id)).Take(10);
+            return allGames.Where(x => wishlistGames.Any(w => w.GameId == x.Id)).Take(3);
         }
         public async Task<IEnumerable<Game>> GetTopSellers()
         {
-            var allGames = await GetReleasedGames();
-            var topSellers = allGames.Where(p => p.Price > 0).Take(3);
-            return topSellers;
+            var allGames = await Database.UserGameRepository.GetAll();
+            var filteredGames = allGames
+                .Where(ug => ug.Game.Price > 0)
+                .Select(ug => ug.Game)
+                .Distinct()
+                .ToList();
+            var purchasedGames = filteredGames
+                .GroupBy(g => g.Id)
+                .OrderByDescending(g => g.Count())  
+                .Select(g => g.First())
+                .Take(3)
+                .ToList();
+            return purchasedGames;
+        }
+        public async Task<IEnumerable<Game>> GetMostPlayed(int topN = 3)
+        {
+            var allUserGames = await Database.UserGameRepository.GetAll();
+
+            var mostPlayedGames = allUserGames
+                .Where(ug => ug.HoursPlayed > 0)
+                .GroupBy(ug => ug.GameId)
+                .Select(g => new
+                {
+                    Game = g.First().Game, 
+                    TotalHours = g.Sum(ug => ug.HoursPlayed)
+                })
+                .OrderByDescending(g => g.TotalHours)
+                .Take(topN)
+                .Select(g => g.Game)
+                .ToList();
+
+            return mostPlayedGames;
         }
 
+
+
+        public async Task GetMostPlayedWithHours()
+        {
+            var allUserGames = await Database.UserGameRepository.GetAll();
+
+            var mostPlayedGames = allUserGames
+                .Where(ug => ug.HoursPlayed > 0)
+                .GroupBy(ug => ug.Game)
+                .Select(g => new
+                {
+                    Game = g.Key,
+                    TotalHours = g.Sum(ug => ug.HoursPlayed)
+                })
+                .OrderByDescending(g => g.TotalHours)
+                .Take(3)
+                .Select(g => (g.Game, g.TotalHours)) 
+                .ToList();
+
+            foreach (var (game, hours) in mostPlayedGames)
+            {
+                _logger.LogInformation($"{game.Title}: total hours {hours}");
+            }
+
+        }
         public async Task<Game?> GetGameByName(string title)
         {
             var allGames = await Database.GameRepository.GetAll();

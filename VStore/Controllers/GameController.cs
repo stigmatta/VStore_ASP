@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Business_Logic.Services;
+using Data_Access.Models;
 using Data_Transfer_Object.DTO.Achievement;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace VStore.Controllers
         private readonly GameService _gameService;
         private readonly GameGalleryService _gameGalleryService;
         private readonly IPaginationService<Game> _paginationService;
+        private readonly IPaginationService<Achievement> _achievementPaginationService;
         private readonly IMapper _mapper;
         private readonly AchievementService _achievementService;
 
@@ -22,7 +24,8 @@ namespace VStore.Controllers
             ILogger<GameController> logger,
             IPaginationService<Game> paginationService,
             IMapper mapper,
-            AchievementService achievementService
+            AchievementService achievementService,
+            IPaginationService<Achievement> achievementPaginationService
             )
         {
             _gameService = gameService;
@@ -31,6 +34,7 @@ namespace VStore.Controllers
             _paginationService = paginationService;
             _mapper = mapper;
             _achievementService = achievementService;
+            _achievementPaginationService = achievementPaginationService;
         }
 
         [HttpPost]
@@ -61,23 +65,24 @@ namespace VStore.Controllers
         {
             try
             {
-                if (request.Id == Guid.Empty)
-                    return BadRequest("Invalid game ID");
+                _logger.LogWarning($"GetAllInfo request: {request.Id}");
                 var minimum = await _gameService.GetMinimumRequirement(request.Id);
                 var recommended = await _gameService.GetRecommendedRequirement(request.Id);
+                var allAchievements = await _achievementService.GetAll(request.Id);
+                var achievements = _mapper.Map<IEnumerable<AchievementDTO>>(allAchievements.Take(4));
                 var userId = Guid.Parse(Request.Cookies["userId"]);
-                var achievements = _mapper.Map<List<AchievementDTO>>(await _achievementService.GetAll(request.Id));
+
                 return Ok(new
                 {
                     minimum,
                     recommended,
                     userId,
-                    achievements
+                    achievements,
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching game requirements");
+                _logger.LogError(ex, "Error fetching");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -85,7 +90,6 @@ namespace VStore.Controllers
         [HttpPost("search")]
         public async Task<IActionResult> Search([FromBody] SearchRequest request) 
         {
-            _logger.LogInformation($"TEXT {request.SearchTerm}");
             try
             {
                 var games = await _gameService.GetSearchedGames(request.SearchTerm);
@@ -99,6 +103,21 @@ namespace VStore.Controllers
                 _logger.LogError(ex, "Error searching for games");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet("{gameId}/achievements")]
+        public async Task<IActionResult> GetPaginatedAchievements(string gameId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            if (!Guid.TryParse(gameId, out var gameGuid))
+                return BadRequest("Invalid game ID");
+            var achievements = await _achievementService.GetAll(gameGuid);
+            (IEnumerable<Achievement?> gameAchievements, int totalCount) = _achievementPaginationService.Paginate(achievements, pageNumber - 1, pageSize);
+            var items = _mapper.Map<IEnumerable<AchievementDTO>>(gameAchievements);
+            return Ok(new
+            {
+                items,
+                totalCount,
+            });
         }
 
         public class SearchRequest

@@ -27,7 +27,6 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index([FromQuery] int pageNumber, [FromQuery]int pageSize, [FromQuery] string sortOption)
         {
             var userId = Request.Cookies["userId"];
-            _logger.LogInformation($"SORT OPTION {sortOption}");
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID is missing");
             List<Wishlist> wishlist = new List<Wishlist>();
@@ -47,7 +46,6 @@ namespace VStore.Controllers
             var userId = Request.Cookies["userId"];
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID is missing");
-            _logger.LogInformation($"GAME ID {gameId}");
 
             var games = await _wishlistService.GetUserWishlist(Guid.Parse(userId));
             var isExists = games.Any(g => g.UserId == Guid.Parse(userId) && g.GameId == gameId);

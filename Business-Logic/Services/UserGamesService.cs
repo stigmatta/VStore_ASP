@@ -15,20 +15,26 @@ namespace Business_Logic.Services
         private readonly AchievementService _achievementService;
         private readonly ILogger<UserGamesService> _logger;
         private readonly IMapper _mapper;
-        public UserGamesService(IUnitOfWork unitOfWork,GameService gameService,ILogger<UserGamesService> logger,IMapper mapper,AchievementService achievementService)
+        private readonly UserAchievementService _userAchievementService;
+        public UserGamesService(IUnitOfWork unitOfWork,GameService gameService,ILogger<UserGamesService> logger,
+            IMapper mapper,AchievementService achievementService,UserAchievementService userAchievementService)
         {
             Database = unitOfWork;
             _gameService = gameService;
             _logger = logger;
             _mapper = mapper;
             _achievementService = achievementService;
+            _userAchievementService = userAchievementService;
         }
         public async Task AddUserGame(UserGame userGame)
         {
             try
             {
                 await Database.UserGameRepository.Add(userGame);
-            }catch(DbUpdateException)
+                await _userAchievementService.AddUserAchievements(userGame.UserId, userGame.GameId);
+
+            }
+            catch (DbUpdateException)
             {
                 throw;
             }

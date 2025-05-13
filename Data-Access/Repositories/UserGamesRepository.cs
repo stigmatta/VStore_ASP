@@ -38,5 +38,10 @@ namespace Data_Access.Repositories
                 .AsNoTracking()        
                 .ToListAsync();
         }
+
+        public async Task<IList<UserGame>> GetAll()
+        {
+            return await _context.UserGames.AsNoTracking().Include(ug=>ug.Game).ToListAsync();
+        }
     }
 }

@@ -18,13 +18,15 @@ namespace VStore.Controllers
         private readonly IMapper _mapper;
         private readonly UserGamesService _userGamesService;
         private readonly UserService _userService;
+        private readonly UserAchievementService _userAchievementService;
 
-        public CartController(ILogger<CartController> logger,IMapper mapper,UserGamesService userGamesService,UserService userService)
+        public CartController(ILogger<CartController> logger,IMapper mapper,UserGamesService userGamesService,UserService userService,UserAchievementService userAchievementService)
         {
             _logger = logger;
             _mapper = mapper;
             _userGamesService = userGamesService;
             _userService = userService;
+            _userAchievementService = userAchievementService;
         }
         [HttpGet]
         public IActionResult Index()
@@ -35,7 +37,6 @@ namespace VStore.Controllers
         public async Task<IActionResult> AddGames([FromBody] OrderRequest request)
         {
             Random rand = new Random();
-            _logger.LogInformation($"Full request: {JsonSerializer.Serialize(request)}");
 
             if (request == null)
             {
@@ -45,10 +46,10 @@ namespace VStore.Controllers
 
 
             var userId = Request.Cookies["userId"];
+            var userGuid = Guid.Parse(userId);
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("User ID is missing");
-            _logger.LogInformation($"User ID: {userId}");
-            var user = await _userService.GetById(Guid.Parse(userId));
+            var user = await _userService.GetById(userGuid);
             if (user == null)
                 return BadRequest("User not found");
             foreach (var game in request.Games)
@@ -57,7 +58,7 @@ namespace VStore.Controllers
                 {
                     await _userGamesService.AddUserGame(new UserGame
                     {
-                        UserId = Guid.Parse(userId),
+                        UserId = userGuid,
                         GameId = game.Id,
                         CompletedPercent = rand.Next(0, 101),
                         HoursPlayed = rand.Next(0, 1000),

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business_Logic.Services;
 using Data_Access.Models;
+using Data_Transfer_Object.DTO.Achievement;
 using Data_Transfer_Object.DTO.GameDTO;
 using Data_Transfer_Object.DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
@@ -17,20 +18,28 @@ namespace VStore.Controllers
         private readonly IMapper _mapper;
         private readonly UserService _userService;
         private readonly UserGamesService _userGamesService;
+        private readonly UserAchievementService _userAchievementService;
         private readonly IPaginationService<UserGame> _paginationService;
+        private readonly IPaginationService<Achievement> _achievementPaginationService;
+
 
         public ProfileController(
             ILogger<ProfileController> logger,
             IMapper mapper,
             UserService userService,
             UserGamesService userGamesService,
-            IPaginationService<UserGame> paginationService)
+            UserAchievementService userAchievementService,
+            IPaginationService<UserGame> paginationService,
+            IPaginationService<Achievement> achievementPaginationService
+            )
         {
             _logger = logger;
             _mapper = mapper;
             _userService = userService;
             _userGamesService = userGamesService;
+            _userAchievementService = userAchievementService;
             _paginationService = paginationService;
+            _achievementPaginationService = achievementPaginationService;
         }
 
         [HttpGet("{userId}")]
@@ -51,7 +60,9 @@ namespace VStore.Controllers
                     return NotFound("User not found");
                 }
 
+
                 bool isSelfProfile = userGuid == Guid.Parse(Request.Cookies["userId"]);
+
 
                 return Ok(new { profile, isSelfProfile });
             }
@@ -71,7 +82,6 @@ namespace VStore.Controllers
             (IEnumerable<UserGame?> games, int totalCount) = _paginationService.Paginate(query, pageNumber - 1, pageSize);
 
             var userGamesDTO = await _userGamesService.MapUserGames(games);
-
             return Ok(new
             {
                 userGamesDTO,
@@ -79,12 +89,20 @@ namespace VStore.Controllers
             });
         }
 
-        //public class ProfileResponse
-        //{
-        //    public ProfileDTO Profile { get; set; }
-        //    public bool IsSelfProfile { get; set; }
-        //    public IEnumerable<ProfileGameDTO> UserGames { get; set; }
-        //    public int TotalCount { get; set; }
-        //}
+        [HttpGet("{userId}/achievements")]
+        public async Task<IActionResult> GetPaginatedAchievements(string userId,[FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID");
+            var achievements = await _userAchievementService.GetAllUserAchievements(userGuid);
+            (IEnumerable<Achievement?> userAchievements, int totalCount) = _achievementPaginationService.Paginate(achievements, pageNumber - 1, pageSize);
+            var items = _mapper.Map<IEnumerable<AchievementDTO>>(userAchievements);
+            return Ok(new
+            {
+                items,
+                totalCount, 
+            });
+        }
+
     }
 }

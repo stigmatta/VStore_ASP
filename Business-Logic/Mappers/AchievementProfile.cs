@@ -20,5 +20,6 @@ namespace Business_Logic.Mappers
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo));
         }
+
     }
 }

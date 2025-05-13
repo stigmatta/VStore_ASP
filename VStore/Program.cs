@@ -88,6 +88,7 @@ builder.Services.AddTransient<WishlistService>();
 builder.Services.AddTransient<GameGalleryService>();
 builder.Services.AddTransient<NewsService>();
 builder.Services.AddTransient<AchievementService>();
+builder.Services.AddTransient<UserAchievementService>();
 builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
 builder.Services.AddScoped<IListRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
 builder.Services.AddScoped<IRequirementsService, RequirementsService>();

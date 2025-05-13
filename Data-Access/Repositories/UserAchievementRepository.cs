@@ -2,6 +2,7 @@
 using Data_Access.Interfaces;
 using Data_Access.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Data_Access.Repositories
 {
@@ -15,6 +16,11 @@ namespace Data_Access.Repositories
         public async Task Add(UserAchievement entity)
         {
             await _context.UserAchievements.AddAsync(entity);
+        }
+
+        public async Task AddRange(IEnumerable<UserAchievement> userAchievements)
+        {
+            await _context.UserAchievements.AddRangeAsync(userAchievements);
         }
         public async Task Delete(Guid id)
         {
@@ -30,14 +36,15 @@ namespace Data_Access.Repositories
         {
             _context.Entry(entity).State = EntityState.Modified;
         }
-        public async Task<IList<UserAchievement>> GetAll(Guid userId)
+        public async Task<IEnumerable<Achievement>> GetAll(Guid userId)
         {
-            var user = await _context.Users
-                .Include(u => u.UserAchievements)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if (user != null)
-                return user.UserAchievements.ToList();
-            return new List<UserAchievement>();
+            return await _context.UserAchievements
+                .Where(ua => ua.UserId == userId)
+                .Include(ua => ua.Achievement)  
+                .Select(ua => ua.Achievement)   
+                .AsNoTracking()              
+                .ToListAsync();
         }
+
     }
 }

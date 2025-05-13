@@ -23,19 +23,45 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index()
         {
             _logger.LogInformation("Main page visited");
+
             var mainGame = await _gameService.GetGameByName("Dead by Daylight");
             var mainGameGallery = await _gameGalleryService.GetByGameId(mainGame.Id);
             var mainGameWithGallery = _gameService.ConnectGameWithGallery(mainGame, mainGameGallery);
-            var discoverNew = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetRecentGames());
-            var withDiscount = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetOnSale());
-            var dealOfTheWeek = _mapper.Map <List<MainPageGameDTO>>(await _gameService.GetDealOfTheWeek());
-            var freeGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetFreeGames());
-            var popularGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetPopularGames());
-            var wishlistGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetWishlistGames());
-            var topSellers = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetTopSellers());
-            var under5Games = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUnder5Dollars());
-            var upcoming = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUpcoming());
-            return Ok(new { mainGameWithGallery, discoverNew,withDiscount,dealOfTheWeek,freeGames,popularGames,wishlistGames,topSellers,under5Games,upcoming});
+            await _gameService.GetMostPlayedWithHours();
+
+            var response = new MainPageResponse
+            {
+                MainGameWithGallery = mainGameWithGallery,
+                DiscoverNew = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetRecentGames()),
+                WithDiscount = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetOnSale()),
+                DealOfTheWeek = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetDealOfTheWeek()),
+                FreeGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetFreeGames()),
+                PopularGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetPopularGames()),
+                MostPlayed = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetMostPlayed()),
+                WishlistGames = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetWishlistGames()),
+                TopSellers = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetTopSellers()),
+                Under5Games = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUnder5Dollars()),
+                Upcoming = _mapper.Map<List<MainPageGameDTO>>(await _gameService.GetUpcoming())
+            };
+
+            return Ok(response);
         }
+
+
+        public class MainPageResponse
+        {
+            public GameDTO MainGameWithGallery { get; set; }
+            public List<MainPageGameDTO> DiscoverNew { get; set; }
+            public List<MainPageGameDTO> WithDiscount { get; set; }
+            public List<MainPageGameDTO> DealOfTheWeek { get; set; }
+            public List<MainPageGameDTO> FreeGames { get; set; }
+            public List<MainPageGameDTO> PopularGames { get; set; }
+            public List<MainPageGameDTO> MostPlayed { get; set; }
+            public List<MainPageGameDTO> WishlistGames { get; set; }
+            public List<MainPageGameDTO> TopSellers { get; set; }
+            public List<MainPageGameDTO> Under5Games { get; set; }
+            public List<MainPageGameDTO> Upcoming { get; set; }
+        }
+
     }
 }
