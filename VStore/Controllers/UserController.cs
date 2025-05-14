@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Data_Transfer_Object.DTO.User;
 using Business_Logic.Services;
 using Microsoft.EntityFrameworkCore;
+using Data_Transfer_Object.DTO.UserDTO;
 
 namespace VStore.Controllers
 {
@@ -113,6 +114,19 @@ namespace VStore.Controllers
             Response.Cookies.Delete("userId", cookieOptions);
             Response.Cookies.Delete("isAdmin", cookieOptions);
             return Ok("Logged out");
+        }
+        [HttpGet("get-user")]
+        public async Task<IActionResult> GetUser()
+        {
+            var userId = Request.Cookies["userId"];
+            var user = await _userService.GetById(Guid.Parse(userId));
+            if (user == null)
+            {
+                _logger.LogInformation("User not found");
+                return NotFound("User not found");
+            }
+            var userDTO = _mapper.Map<ProfileDTO>(user);
+            return Ok(userDTO);
         }
         
     }

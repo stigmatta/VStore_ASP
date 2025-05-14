@@ -110,7 +110,7 @@ namespace VStore.Controllers
         {
             var saveMethod = Request.Cookies["cardType"];
             if (string.IsNullOrEmpty(saveMethod))
-                return BadRequest("Save method is missing");
+                return Ok();
             return Ok(saveMethod);
         }
 

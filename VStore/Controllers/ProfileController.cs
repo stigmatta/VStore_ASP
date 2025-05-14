@@ -2,7 +2,6 @@
 using Business_Logic.Services;
 using Data_Access.Models;
 using Data_Transfer_Object.DTO.Achievement;
-using Data_Transfer_Object.DTO.GameDTO;
 using Data_Transfer_Object.DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +39,11 @@ namespace VStore.Controllers
             _userAchievementService = userAchievementService;
             _paginationService = paginationService;
             _achievementPaginationService = achievementPaginationService;
+        }
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return Ok(true);
         }
 
         [HttpGet("{userId}")]

@@ -32,12 +32,12 @@ namespace Data_Access.Repositories
         }
         public async Task<IList<Review>> GetAll(Guid gameId)
         {
-            var game = await _context.Games
-                .Include(g => g.Reviews)
-                .FirstOrDefaultAsync(g => g.Id == gameId);
-            if (game != null)
-                return game.Reviews.ToList();
-            return new List<Review>();
+            return await _context.Reviews
+                .Where(r => r.GameId == gameId)
+                .Include(r => r.User) 
+                .Include(r => r.Game)
+                .AsNoTracking()  
+                .ToListAsync();
         }
     }
 }

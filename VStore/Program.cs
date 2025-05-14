@@ -1,5 +1,4 @@
 ﻿using Business_Logic.Mappers;
-using Business_Logic.Mappers.UserProfile;
 using Business_Logic.Services;
 using Data_Access.Context;
 using Data_Access.Interfaces;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +87,7 @@ builder.Services.AddTransient<GameGalleryService>();
 builder.Services.AddTransient<NewsService>();
 builder.Services.AddTransient<AchievementService>();
 builder.Services.AddTransient<UserAchievementService>();
+builder.Services.AddTransient<ReviewService>();
 builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
 builder.Services.AddScoped<IListRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
 builder.Services.AddScoped<IRequirementsService, RequirementsService>();

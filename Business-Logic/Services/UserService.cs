@@ -30,7 +30,6 @@ namespace Business_Logic.Services
         }
         public async Task<User?> GetById(Guid? id)
         {
-            _logger.LogInformation($"Get user by id {id}");
             return await Database.UserRepository.GetById(id);
         }
         public string HashPassword(string password)

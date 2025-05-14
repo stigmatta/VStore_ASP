@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using Business_Logic.Services;
 using Data_Access.Models;
+using Data_Transfer_Object.DTO;
 using Data_Transfer_Object.DTO.Achievement;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,29 +12,33 @@ namespace VStore.Controllers
     {
         private readonly GameService _gameService;
         private readonly GameGalleryService _gameGalleryService;
-        private readonly IPaginationService<Game> _paginationService;
+        private readonly IPaginationService<Review> _reviewPaginationService;
+        
         private readonly IPaginationService<Achievement> _achievementPaginationService;
         private readonly IMapper _mapper;
         private readonly AchievementService _achievementService;
+        private readonly ReviewService _reviewService;
 
         private readonly ILogger<GameController> _logger;
         public GameController(
             GameService gameService,
             GameGalleryService gameGalleryService,
             ILogger<GameController> logger,
-            IPaginationService<Game> paginationService,
+            IPaginationService<Review> reviewPaginationService,
             IMapper mapper,
             AchievementService achievementService,
-            IPaginationService<Achievement> achievementPaginationService
+            IPaginationService<Achievement> achievementPaginationService,
+            ReviewService reviewService
             )
         {
             _gameService = gameService;
             _gameGalleryService = gameGalleryService;
             _logger = logger;
-            _paginationService = paginationService;
+            _reviewPaginationService = reviewPaginationService;
             _mapper = mapper;
             _achievementService = achievementService;
             _achievementPaginationService = achievementPaginationService;
+            _reviewService = reviewService;
         }
 
         [HttpPost]
@@ -120,6 +124,39 @@ namespace VStore.Controllers
             });
         }
 
+        [HttpGet("{gameId}/reviews")]
+        public async Task<IActionResult> GetPaginatedReviews(string gameId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            if (!Guid.TryParse(gameId, out var gameGuid))
+                return BadRequest("Invalid game ID");
+            var reviews = await _reviewService.GetAll(gameGuid);
+            int ratingInPercent = _reviewService.GetRatingInPercent(reviews);
+            _logger.LogWarning($"Rating in percent: {ratingInPercent}");
+            (IEnumerable<Review?> gameReviews, int totalCount) = _reviewPaginationService.Paginate(reviews, pageNumber - 1, pageSize);
+            var items = _mapper.Map<IEnumerable<ReviewDTO>>(gameReviews);
+            return Ok(new
+            {
+                items,
+                totalCount,
+                ratingInPercent
+            });
+        }
+
+        [HttpPost("post-review")]
+        public async Task<IActionResult> PostReview([FromBody]GameReview newReview)
+        {
+            var review = new Review
+            {
+                GameId = newReview.GameId,
+                UserId = newReview.UserId,
+                Text = newReview.Text,
+                IsLiked = newReview.IsLiked,
+                PostedAt = DateTime.UtcNow,
+            };
+            await _reviewService.AddReview(review);
+            return Ok("good job");
+        }
+
         public class SearchRequest
         {
             public string SearchTerm { get; set; }
@@ -135,6 +172,15 @@ namespace VStore.Controllers
         public class GameRequest
         {
             public Guid Id { get; set; }
+        }
+
+        public class GameReview
+        {
+            public Guid GameId { get; set; }
+            public Guid UserId { get; set; }
+            public string Text { get; set; }
+            public bool IsLiked { get; set; }
+            public DateTime PostedAt { get; set; }
         }
     }
 }
