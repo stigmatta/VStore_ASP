@@ -13,12 +13,11 @@ namespace Data_Access.Repositories
         private UserGamesRepository _userGameRepository;
         private UserAchievementRepository _userAchievementRepository;
         private AchievementRepository _achievementRepository;
-        private FriendRepository _friendRepository;
         private ReviewRepository _reviewRepository;
-        private BlockedUserRepository _blockedUserRepository;
         private NewsRepository _newsRepository;
         private MinimumRequirementRepository _minimumRequirementRepository;
         private RecommendedRequirementRepository _recommendedRequirementRepository;
+        private RelationshipRepository _relationshipRepository;
 
         public UnitOfWork(StoreContext context)
         {
@@ -76,24 +75,10 @@ namespace Data_Access.Repositories
             }
         }
 
-        public FriendRepository FriendRepository {
-            get
-            {
-                return _friendRepository ?? new FriendRepository(_context);
-            }
-        }
-
         public ReviewRepository ReviewRepository {
             get
             {
                 return _reviewRepository ?? new ReviewRepository(_context);
-            }
-        }
-
-        public BlockedUserRepository BlockedUserRepository {
-            get
-            {
-                return _blockedUserRepository ?? new BlockedUserRepository(_context);
             }
         }
 
@@ -115,6 +100,13 @@ namespace Data_Access.Repositories
             get
             {
                 return _recommendedRequirementRepository ?? new RecommendedRequirementRepository(_context);
+            }
+        }
+        public RelationshipRepository RelationshipRepository
+        {
+            get
+            {
+                return _relationshipRepository ?? new RelationshipRepository(_context);
             }
         }
 

@@ -18,6 +18,7 @@ namespace VStore.Controllers
         private readonly UserService _userService;
         private readonly UserGamesService _userGamesService;
         private readonly UserAchievementService _userAchievementService;
+        private readonly RelationshipService _relationshipService;
         private readonly IPaginationService<UserGame> _paginationService;
         private readonly IPaginationService<Achievement> _achievementPaginationService;
 
@@ -28,6 +29,7 @@ namespace VStore.Controllers
             UserService userService,
             UserGamesService userGamesService,
             UserAchievementService userAchievementService,
+            RelationshipService relationshipService,
             IPaginationService<UserGame> paginationService,
             IPaginationService<Achievement> achievementPaginationService
             )
@@ -37,6 +39,7 @@ namespace VStore.Controllers
             _userService = userService;
             _userGamesService = userGamesService;
             _userAchievementService = userAchievementService;
+            _relationshipService = relationshipService;
             _paginationService = paginationService;
             _achievementPaginationService = achievementPaginationService;
         }
@@ -64,11 +67,23 @@ namespace VStore.Controllers
                     return NotFound("User not found");
                 }
 
+                string status;
+                var selfUser = Guid.Parse(Request.Cookies["userId"]);
+                if (userGuid == selfUser)
+                {
+                    status = "Self";
+                }
+                else
+                {
+                    status = await _relationshipService.GetStatus(userGuid, selfUser);
+                }
 
-                bool isSelfProfile = userGuid == Guid.Parse(Request.Cookies["userId"]);
+
+                var friends = await _relationshipService.GetFriends(userGuid);
+                var friendCount = friends?.Count() ?? 0;
 
 
-                return Ok(new { profile, isSelfProfile });
+                return Ok(new { profile, status, friendCount });
             }
             catch (Exception ex)
             {
@@ -77,7 +92,7 @@ namespace VStore.Controllers
             }
         }
         [HttpGet("{userId}/games")]
-        public async Task<IActionResult> GetPaginatedGames(string userId, [FromQuery] int pageNumber,[FromQuery]int pageSize)
+        public async Task<IActionResult> GetPaginatedGames(string userId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             if (!Guid.TryParse(userId, out var userGuid))
                 return BadRequest("Invalid user ID");
@@ -94,7 +109,7 @@ namespace VStore.Controllers
         }
 
         [HttpGet("{userId}/achievements")]
-        public async Task<IActionResult> GetPaginatedAchievements(string userId,[FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetPaginatedAchievements(string userId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             if (!Guid.TryParse(userId, out var userGuid))
                 return BadRequest("Invalid user ID");
@@ -104,9 +119,96 @@ namespace VStore.Controllers
             return Ok(new
             {
                 items,
-                totalCount, 
+                totalCount,
             });
         }
 
+        [HttpGet("{userId}/friends")]
+        public async Task<IActionResult> GetFriends([FromRoute] string userId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            _logger.LogWarning($"USER GUID {userGuid}");
+
+            try
+            {
+                var friends = await _relationshipService.GetFriends(userGuid);
+                if (friends == null || !friends.Any())
+                    return Ok(Enumerable.Empty<ProfileDTO>());
+
+                var items = _mapper.Map<IEnumerable<ProfileDTO>>(friends);
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching friends");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet("{userId}/blocked")]
+        public async Task<IActionResult> GetBlocked([FromRoute] string userId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            _logger.LogWarning($"USER GUID {userGuid}");
+
+            try
+            {
+                var blocked = await _relationshipService.GetBlocked(userGuid);
+                if (blocked == null || !blocked.Any())
+                    return Ok(Enumerable.Empty<ProfileDTO>());
+
+                var items = _mapper.Map<IEnumerable<ProfileDTO>>(blocked);
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching friends");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet("{userId}/pending")]
+        public async Task<IActionResult> GetPending([FromRoute] string userId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            _logger.LogWarning($"USER GUID {userGuid}");
+
+            try
+            {
+                var pending = await _relationshipService.GetPending(userGuid);
+                if (pending == null || !pending.Any())
+                    return Ok(Enumerable.Empty<ProfileDTO>());
+
+                var items = _mapper.Map<IEnumerable<ProfileDTO>>(pending);
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching friends");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("{userId}/delete/{friendId}")]
+        public async Task<IActionResult> DeleteFriend([FromRoute] string userId, [FromRoute] string friendId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            if (!Guid.TryParse(friendId, out var friendGuid))
+                return BadRequest("Invalid friend ID format");
+            try
+            {
+                await _relationshipService.DeleteFriend(userGuid, friendGuid);
+                return Ok("Friend deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting friend");
+                return StatusCode(500, "Internal server error");
+            }
+
+
+        }
     }
 }

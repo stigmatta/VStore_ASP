@@ -16,8 +16,7 @@ namespace Business_Logic.Mappers.UserProfile
                 .ForMember(dest => dest.Photo, opt => opt.Ignore())
                 .ForMember(dest => dest.UserAchievements, opt => opt.Ignore())
                 .ForMember(dest => dest.UserGames, opt => opt.Ignore())
-                .ForMember(dest => dest.Friends, opt => opt.Ignore())
-                .ForMember(dest => dest.BlockedUsers, opt => opt.Ignore())
+                .ForMember(dest=>dest.Relationships, opt => opt.Ignore())
                 .ForMember(dest => dest.Wishlist, opt => opt.Ignore());
         }
     }

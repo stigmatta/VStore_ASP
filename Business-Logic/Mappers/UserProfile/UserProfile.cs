@@ -11,8 +11,6 @@ namespace Business_Logic.Mappers.UserProfile
             CreateMap<User, ProfileDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
                 .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo));
         }
 

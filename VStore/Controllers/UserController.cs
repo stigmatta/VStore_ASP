@@ -128,6 +128,32 @@ namespace VStore.Controllers
             var userDTO = _mapper.Map<ProfileDTO>(user);
             return Ok(userDTO);
         }
-        
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!Request.Cookies.TryGetValue("userId", out var userId))
+            {
+                return Unauthorized("User not authenticated");
+            }
+
+            if (!Guid.TryParse(userId, out var userGuid))
+            {
+                return BadRequest("Invalid user ID format");
+            }
+            try
+            {
+                var users = await _userService.GetAll();
+                var userDtos = _mapper.Map<List<ProfileDTO>>(users);
+                var withoutSelf = userDtos.Where(x => x.Id != userGuid).ToList();
+
+                return Ok(withoutSelf);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching users");
+                return StatusCode(500, "An error occurred while fetching users");
+            }
+        }
+
     }
 }

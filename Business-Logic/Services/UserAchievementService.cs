@@ -44,7 +44,6 @@ namespace Business_Logic.Services
             {
                 await Database.UserAchievementRepository.AddRange(newAchievements);
                 await Database.Save();
-                _logger.LogInformation($"Added {newAchievements.Count} new achievements for user {userId}.");
             }
         }
 

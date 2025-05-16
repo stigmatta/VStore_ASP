@@ -16,9 +16,8 @@ namespace Data_Access.Interfaces
         UserGamesRepository UserGameRepository { get; }
         UserAchievementRepository UserAchievementRepository { get; }
         AchievementRepository AchievementRepository { get; }
-        FriendRepository FriendRepository { get; }
         ReviewRepository ReviewRepository { get; }
-        BlockedUserRepository BlockedUserRepository { get; }
+        RelationshipRepository RelationshipRepository { get; }
         NewsRepository NewsRepository { get; }
         MinimumRequirementRepository MinimumRequirementRepository { get; }
         RecommendedRequirementRepository RecommendedRequirementRepository { get; }

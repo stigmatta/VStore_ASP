@@ -88,6 +88,8 @@ builder.Services.AddTransient<NewsService>();
 builder.Services.AddTransient<AchievementService>();
 builder.Services.AddTransient<UserAchievementService>();
 builder.Services.AddTransient<ReviewService>();
+builder.Services.AddTransient<RelationshipService>();
+
 builder.Services.AddScoped<IListRepository<MinimumRequirement>, MinimumRequirementRepository>();
 builder.Services.AddScoped<IListRepository<RecommendedRequirement>, RecommendedRequirementRepository>();
 builder.Services.AddScoped<IRequirementsService, RequirementsService>();

@@ -16,8 +16,7 @@ namespace Data_Access.Context
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<UserAchievement> UserAchievements { get; set; }
         public DbSet<UserGame> UserGames { get; set; }
-        public DbSet<Friend> Friends { get; set; }
-        public DbSet<BlockedUser> BlockedUsers { get; set; }
+        public DbSet<Relationship> Relationships { get; set; } 
 
         public StoreContext(DbContextOptions<StoreContext> options) : base(options) {
         }
@@ -47,11 +46,8 @@ namespace Data_Access.Context
                 .HasKey(ua => new { ua.UserId, ua.AchievementId });
             mb.Entity<UserGame>()
                 .HasKey(ug => new { ug.UserId, ug.GameId });
-            mb.Entity<Friend>()
-                .HasKey(f => new { f.UserId, f.FriendId });
-            mb.Entity<BlockedUser>()
-                .HasKey(b => new { b.UserId, b.BlockedUserId });
-
+            mb.Entity<Relationship>()
+                .HasKey(r => new { r.UserId, r.FriendId });
 
             // Configuring the relationships
 
@@ -108,31 +104,18 @@ namespace Data_Access.Context
                 .HasForeignKey(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Friends
-            mb.Entity<Friend>()
-                .HasOne(f => f.User) //user friends to user
-                .WithMany(u => u.Friends)
-                .HasForeignKey(f => f.UserId)
+            //Relationship
+            mb.Entity<Relationship>()
+                .ToTable("Relationships"); 
+            mb.Entity<Relationship>()
+                .HasOne(r => r.User) 
+                .WithMany(u => u.Relationships)
+                .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            mb.Entity<Friend>()
-                .HasOne(f => f.FriendUser) //friend to user
+            mb.Entity<Relationship>()
+                .HasOne(r => r.FriendUser) 
                 .WithMany()
-                .HasForeignKey(f => f.FriendId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            //BlockedUsers
-            mb.Entity<BlockedUser>()
-                .ToTable("BlockedUsers"); //table name
-            mb.Entity<BlockedUser>()
-                .HasOne(b=>b.User) //user blocked users to user
-                .WithMany(u => u.BlockedUsers)
-                .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
-            mb.Entity<BlockedUser>()
-                .HasOne(b => b.Blocked) //blocked user to users
-                .WithMany()
-                .HasForeignKey(b => b.BlockedUserId)
+                .HasForeignKey(r => r.FriendId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 

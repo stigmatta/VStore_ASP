@@ -47,6 +47,10 @@ namespace Business_Logic.Services
 
             return user; 
         }
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await Database.UserRepository.GetAll();
+        }
 
     }
 }

@@ -11,8 +11,7 @@
         public int Level { get; set; } = 1;
         public virtual ICollection<UserAchievement> UserAchievements { get; set; } = null!;
         public virtual ICollection<UserGame> UserGames { get; set; } = null!;
-        public virtual ICollection<Friend> Friends { get; set; } = null!;
-        public virtual ICollection<BlockedUser> BlockedUsers { get; set; } = null!;
+        public virtual ICollection<Relationship>Relationships { get; set; } = null!;
         public virtual ICollection<Wishlist> Wishlist { get; set; } = null!;
     }
 }
