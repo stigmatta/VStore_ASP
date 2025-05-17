@@ -1,10 +1,11 @@
-﻿using AutoMapper;
-using Data_Access.Models;
-using Microsoft.AspNetCore.Mvc;
-using Data_Transfer_Object.DTO.User;
-using Business_Logic.Services;
+﻿using Business_Logic.Services;
 using Microsoft.EntityFrameworkCore;
 using Data_Transfer_Object.DTO.UserDTO;
+using System.IO;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Data_Transfer_Object.DTO.User;
+using Data_Access.Models;
 
 namespace VStore.Controllers
 {
@@ -14,12 +15,18 @@ namespace VStore.Controllers
         private readonly IMapper _mapper;
         private readonly UserService _userService;
         private readonly ILogger<UserController> _logger;
+        private readonly IWebHostEnvironment _environment;
 
-        public UserController(IMapper mapper,UserService userService,ILogger<UserController> logger)
+        public UserController(
+            IMapper mapper,
+            UserService userService,
+            ILogger<UserController> logger,
+            IWebHostEnvironment environment)
         {
             _mapper = mapper;
             _userService = userService;
             _logger = logger;
+            _environment = environment;
         }
 
 
@@ -27,7 +34,7 @@ namespace VStore.Controllers
         public async Task<IActionResult> Index()
         {
             var isAuthorized = Request.Cookies.ContainsKey("username");
-            if(isAuthorized == true)
+            if (isAuthorized == true)
             {
                 var userId = Request.Cookies["userId"];
                 return Ok(new { isAuthorized, userId });
@@ -47,7 +54,8 @@ namespace VStore.Controllers
             try
             {
                 await _userService.Create(user);
-            }catch(DbUpdateException)
+            }
+            catch (DbUpdateException)
             {
                 _logger.LogInformation("DbUpdateException");
                 return BadRequest("User with this email already exists");
@@ -61,7 +69,7 @@ namespace VStore.Controllers
             return Ok("User registered successfully");
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             _logger.LogInformation("Logging in user with email: {username}", loginDTO.Username);
             if (loginDTO == null || string.IsNullOrEmpty(loginDTO.Username) || string.IsNullOrEmpty(loginDTO.Password))
@@ -89,7 +97,7 @@ namespace VStore.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true, 
+                Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddHours(2)
             };
@@ -110,7 +118,7 @@ namespace VStore.Controllers
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddHours(2)
             };
-            Response.Cookies.Delete("username",cookieOptions);
+            Response.Cookies.Delete("username", cookieOptions);
             Response.Cookies.Delete("userId", cookieOptions);
             Response.Cookies.Delete("isAdmin", cookieOptions);
             return Ok("Logged out");
@@ -154,6 +162,110 @@ namespace VStore.Controllers
                 return StatusCode(500, "An error occurred while fetching users");
             }
         }
+        [HttpPost("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequest request)
+        {
+            if (!Request.Cookies.TryGetValue("userId", out var userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
 
+            try
+            {
+                var user = await _userService.GetById(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                // Обновление аватара
+                if (request.Avatar != null && request.Avatar.Length > 0)
+                {
+                    var avatarUrl = await SaveAvatar(request.Avatar);
+                    await _userService.UpdateAvatar(userId, avatarUrl);
+                    user.Photo = avatarUrl;
+                }
+
+                // Обновление имени пользователя
+                if (!string.IsNullOrWhiteSpace(request.Username) && request.Username != user.Username)
+                {
+                    if (await _userService.CheckUsernameExists(request.Username))
+                    {
+                        return BadRequest(new { message = "Username already taken" });
+                    }
+
+                    await _userService.UpdateUsername(userId, request.Username);
+                    user.Username = request.Username;
+
+                    // Обновляем cookie с новым именем
+                    Response.Cookies.Append("username", user.Username, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.None,
+                        Expires = DateTimeOffset.Now.AddHours(2)
+                    });
+                }
+
+                // Обновление пароля
+                if (!string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword))
+                {
+                    var verifiedUser = await _userService.VerifyUser(user.Username, request.OldPassword);
+                    if (verifiedUser == null)
+                    {
+                        return BadRequest(new { message = "Old password is incorrect" });
+                    }
+
+                    await _userService.UpdatePassword(userId, request.NewPassword);
+                }
+
+                var userDto = _mapper.Map<ProfileDTO>(user);
+                return Ok(userDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating profile");
+                return StatusCode(500, new { message = "An error occurred while updating profile" });
+            }
+        }
+
+        private async Task<string> SaveAvatar(IFormFile avatarFile)
+        {
+            // Проверяем расширение файла
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                throw new ArgumentException("Invalid file type");
+            }
+
+            // Создаем уникальное имя файла
+            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "avatars");
+
+            // Создаем папку, если ее нет
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Сохраняем файл
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await avatarFile.CopyToAsync(stream);
+            }
+
+            return $"/avatars/{fileName}";
+        }
+
+        public class UpdateProfileRequest
+        {
+            public string Username { get; set; }
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
+            public IFormFile Avatar { get; set; }
+        }
     }
-}
+    }

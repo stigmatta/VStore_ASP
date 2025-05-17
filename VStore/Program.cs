@@ -105,6 +105,7 @@ if (!Directory.Exists(logosPath)) Directory.CreateDirectory(logosPath);
 
 // Настройка middleware
 app.UseCors("AllowReact");
+app.UseCors("AllowLocalhost");
 
 if (app.Environment.IsDevelopment())
 {
@@ -130,6 +131,19 @@ var staticFileOptions = new StaticFileOptions
 
 app.UseStaticFiles();
 app.UseStaticFiles(staticFileOptions);
+var avatarsPath = Path.Combine(builder.Environment.WebRootPath, "avatars");
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(avatarsPath),
+    RequestPath = "/avatars",
+    ContentTypeProvider = new FileExtensionContentTypeProvider(),
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
+    }
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
