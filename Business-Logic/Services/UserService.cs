@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sodium;
 
+
 namespace Business_Logic.Services
 {
     public class UserService : IUserService
@@ -106,6 +107,32 @@ namespace Business_Logic.Services
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "Error updating avatar");
+                throw;
+            }
+        }
+
+        public async Task DeleteOldAvatar(Guid userId)
+        {
+            try
+            {
+                var user = await _database.UserRepository.GetById(userId);
+                if (user == null || string.IsNullOrEmpty(user.Photo))
+                {
+                    return; 
+                }
+
+                user.Photo = null;
+                _database.UserRepository.Update(user);
+                await _database.Save();
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Error deleting avatar reference from database");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during avatar deletion");
                 throw;
             }
         }

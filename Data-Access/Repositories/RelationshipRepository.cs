@@ -44,8 +44,6 @@ namespace Data_Access.Repositories
                 return user.Relationships.ToList();
             return new List<Relationship>();
         }
-
-
         public async Task<IList<Relationship>> GetFriends(Guid userId)
         {
             var friends = await _context.Relationships.Where(x => x.UserId == userId && x.Status == "Friend").Include(x => x.FriendUser).ToListAsync();
@@ -58,17 +56,15 @@ namespace Data_Access.Repositories
         }
         public async Task<IList<Relationship>> GetPending(Guid userId)
         {
-            var sentRequests = await _context.Relationships.Where(x => x.UserId == userId && x.Status == "Pending").Include(x=>x.FriendUser).ToListAsync();
+            var sentRequests = await _context.Relationships.Where(x => x.FriendId == userId && x.Status == "Pending").Include(x=>x.User).ToListAsync();
             return sentRequests;
         }
-        public async Task<string> GetStatus(Guid userId, Guid friendId)
+        public async Task<Relationship> GetRelation(Guid userId, Guid friendId)
         {
             var relationship = await _context.Relationships
-                    .Where(r => (r.UserId == userId && r.FriendId == friendId) ||
-                               (r.UserId == friendId && r.FriendId == userId))
-                    .Select(r => r.Status)
+                    .Where(r => r.UserId == userId && r.FriendId == friendId)
                     .FirstOrDefaultAsync();
-            return relationship ?? "Stranger";
+            return relationship;
         }
 
         public Task Delete(Guid id)

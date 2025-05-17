@@ -67,23 +67,16 @@ namespace VStore.Controllers
                     return NotFound("User not found");
                 }
 
-                string status;
+                string status,inverseStatus;
                 var selfUser = Guid.Parse(Request.Cookies["userId"]);
-                if (userGuid == selfUser)
-                {
-                    status = "Self";
-                }
-                else
-                {
-                    status = await _relationshipService.GetStatus(userGuid, selfUser);
-                }
-
+                status = await _relationshipService.GetStatus(selfUser,userGuid);
+                inverseStatus = await _relationshipService.GetStatus(userGuid, selfUser);
 
                 var friends = await _relationshipService.GetFriends(userGuid);
                 var friendCount = friends?.Count() ?? 0;
 
 
-                return Ok(new { profile, status, friendCount });
+                return Ok(new { profile, status,inverseStatus, friendCount });
             }
             catch (Exception ex)
             {
@@ -172,20 +165,47 @@ namespace VStore.Controllers
         {
             if (!Guid.TryParse(userId, out var userGuid))
                 return BadRequest("Invalid user ID format");
-            _logger.LogWarning($"USER GUID {userGuid}");
 
             try
             {
                 var pending = await _relationshipService.GetPending(userGuid);
                 if (pending == null || !pending.Any())
                     return Ok(Enumerable.Empty<ProfileDTO>());
-
-                var items = _mapper.Map<IEnumerable<ProfileDTO>>(pending);
+                IList<ProfileDTO> items = new List<ProfileDTO>();
+                foreach (var item in pending)
+                {
+                    items.Add(new ProfileDTO
+                    {
+                        Id = item.UserId,
+                        Username = item.User.Username,
+                        Photo = item.User.Photo,
+                        Level = item.User.Level,
+                    });
+                }
                 return Ok(items);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching friends");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost("{userId}/add/{friendId}")]
+        public async Task<IActionResult> AddFriend([FromRoute] string userId, [FromRoute] string friendId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            if (!Guid.TryParse(friendId, out var friendGuid))
+                return BadRequest("Invalid friend ID format");
+            try
+            {
+                var newStatus = await _relationshipService.AddFriend(userGuid, friendGuid);
+                return Ok(newStatus);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding friend");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -207,8 +227,42 @@ namespace VStore.Controllers
                 _logger.LogError(ex, "Error deleting friend");
                 return StatusCode(500, "Internal server error");
             }
-
-
+        }
+        [HttpPatch("{userId}/block/{friendId}")]
+        public async Task<IActionResult> BlockUser([FromRoute] string userId, [FromRoute] string friendId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            if (!Guid.TryParse(friendId, out var friendGuid))
+                return BadRequest("Invalid friend ID format");
+            try
+            {
+                await _relationshipService.BlockUser(userGuid, friendGuid);
+                return Ok("User is blocked!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error blocking friend");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpPatch("{userId}/unblock/{friendId}")]
+        public async Task<IActionResult> UnblockUser([FromRoute] string userId, [FromRoute] string friendId)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+                return BadRequest("Invalid user ID format");
+            if (!Guid.TryParse(friendId, out var friendGuid))
+                return BadRequest("Invalid friend ID format");
+            try
+            {
+                await _relationshipService.UnblockUser(userGuid, friendGuid);
+                return Ok("User is unblocked!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error unblocking friend");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

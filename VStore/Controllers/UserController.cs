@@ -1,7 +1,6 @@
 ﻿using Business_Logic.Services;
 using Microsoft.EntityFrameworkCore;
 using Data_Transfer_Object.DTO.UserDTO;
-using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Data_Transfer_Object.DTO.User;
@@ -178,15 +177,22 @@ namespace VStore.Controllers
                     return NotFound(new { message = "User not found" });
                 }
 
-                // Обновление аватара
                 if (request.Avatar != null && request.Avatar.Length > 0)
                 {
                     var avatarUrl = await SaveAvatar(request.Avatar);
+                    if (!string.IsNullOrEmpty(user.Photo) && !user.Photo.StartsWith("http"))
+                    {
+                        var fullPath = Path.Combine(_environment.WebRootPath, user.Photo.TrimStart('/'));
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            System.IO.File.Delete(fullPath);
+                            _logger.LogInformation("Deleted old avatar: {Path}", fullPath);
+                        }
+                    }
                     await _userService.UpdateAvatar(userId, avatarUrl);
                     user.Photo = avatarUrl;
                 }
 
-                // Обновление имени пользователя
                 if (!string.IsNullOrWhiteSpace(request.Username) && request.Username != user.Username)
                 {
                     if (await _userService.CheckUsernameExists(request.Username))
@@ -197,7 +203,6 @@ namespace VStore.Controllers
                     await _userService.UpdateUsername(userId, request.Username);
                     user.Username = request.Username;
 
-                    // Обновляем cookie с новым именем
                     Response.Cookies.Append("username", user.Username, new CookieOptions
                     {
                         HttpOnly = true,
@@ -207,7 +212,6 @@ namespace VStore.Controllers
                     });
                 }
 
-                // Обновление пароля
                 if (!string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword))
                 {
                     var verifiedUser = await _userService.VerifyUser(user.Username, request.OldPassword);
@@ -231,19 +235,16 @@ namespace VStore.Controllers
 
         private async Task<string> SaveAvatar(IFormFile avatarFile)
         {
-            // Проверяем расширение файла
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif",".webp" };
             var fileExtension = Path.GetExtension(avatarFile.FileName).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
                 throw new ArgumentException("Invalid file type");
             }
 
-            // Создаем уникальное имя файла
             var fileName = $"{Guid.NewGuid()}{fileExtension}";
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "avatars");
 
-            // Создаем папку, если ее нет
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
@@ -251,7 +252,6 @@ namespace VStore.Controllers
 
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // Сохраняем файл
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await avatarFile.CopyToAsync(stream);
@@ -259,6 +259,7 @@ namespace VStore.Controllers
 
             return $"/avatars/{fileName}";
         }
+
 
         public class UpdateProfileRequest
         {
